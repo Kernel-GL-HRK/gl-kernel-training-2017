@@ -7,35 +7,36 @@
 
 #include "mpu6050-regs.h"
 
-
-struct mpu6050_data
+#define ACCEL 0
+#define GYRO  1
+#define TEMPR 2
+static struct mpu6050_data
 {
 	struct i2c_client *drv_client;
 	int accel_values[3];
 	int gyro_values[3];
 	int temperature;
-};
-
-static struct mpu6050_data g_mpu6050_data;
+} g_mpu6050_data;
 
 static int mpu6050_read_data(void)
 {
 	int temp;
+	struct i2c_client *client = g_mpu6050_data.drv_client;
 
-	if (g_mpu6050_data.drv_client == 0)
+	if (client == 0)
 		return -ENODEV;
 
 	/* accel */
-	g_mpu6050_data.accel_values[0] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_ACCEL_XOUT_H));
-	g_mpu6050_data.accel_values[1] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_ACCEL_YOUT_H));
-	g_mpu6050_data.accel_values[2] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_ACCEL_ZOUT_H));
+	g_mpu6050_data.accel_values[0] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_ACCEL_XOUT_H));
+	g_mpu6050_data.accel_values[1] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_ACCEL_YOUT_H));
+	g_mpu6050_data.accel_values[2] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_ACCEL_ZOUT_H));
 	/* gyro */
-	g_mpu6050_data.gyro_values[0] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_GYRO_XOUT_H));
-	g_mpu6050_data.gyro_values[1] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_GYRO_YOUT_H));
-	g_mpu6050_data.gyro_values[2] = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_GYRO_ZOUT_H));
+	g_mpu6050_data.gyro_values[0] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_GYRO_XOUT_H));
+	g_mpu6050_data.gyro_values[1] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_GYRO_YOUT_H));
+	g_mpu6050_data.gyro_values[2] = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_GYRO_ZOUT_H));
 	/* temp */
 	/* Temperature in degrees C = (TEMP_OUT Register Value  as a signed quantity)/340 + 36.53 */
-	temp = (s16)((u16)i2c_smbus_read_word_swapped(g_mpu6050_data.drv_client, REG_TEMP_OUT_H));
+	temp = (s16)((u16)i2c_smbus_read_word_swapped(client, REG_TEMP_OUT_H));
 	g_mpu6050_data.temperature = (temp + 12420 + 170) / 340;
 
 	printk(KERN_INFO "mpu6050: sensor data read:\n");
@@ -81,20 +82,21 @@ static int mpu6050_probe(struct i2c_client *drv_client, const struct i2c_device_
 	i2c_smbus_write_byte_data(drv_client, REG_PWR_MGMT_1, 0);
 	i2c_smbus_write_byte_data(drv_client, REG_PWR_MGMT_2, 0);
 
+	g_mpu6050_data.drv_client = drv_client;
 	printk(KERN_INFO "mpu6050: i2c driver probed\n");
 	return 0;
 }
 
 static int mpu6050_remove(struct i2c_client *drv_client)
 {
-	g_mpu6050_data.drv_client = 0;
+	g_mpu6050_data.drv_client = NULL;
 
 	printk(KERN_INFO "mpu6050: i2c driver removed\n");
 	return 0;
 }
 
 static const struct i2c_device_id mpu6050_idtable [] = {
-	{ "gl_mpu6050", 0 },
+	{ "mpu6050", 0 },
 	{ }
 };
 
@@ -107,6 +109,36 @@ static struct i2c_driver mpu6050_i2c_driver = {
 	.remove = mpu6050_remove,
 	.id_table = mpu6050_idtable,
 };
+
+//static ssize_t read_data(char* buf, int how, int index)
+//{
+//	mpu6050_read_data();
+//	int val = 0;
+//	switch (how)
+//	{
+//	case ACCEL:
+//		if (index >= 3)
+//			goto er;
+//		val = g_mpu6050_data.accel_values[index];
+//		break;
+//	case GYRO:
+//		if (index >= 3)
+//			goto er;
+//		val = g_mpu6050_data.gyro_values[index];
+//		break;
+//	case TEMPR:
+//		if (index != 0)
+//			goto er;
+//		val = g_mpu6050_data.temperature;
+//	default:
+//		goto er;
+//	}
+//
+//	sprintf(buf, "%d\n", g_mpu6050_data.accel_values[0]);
+//	return strlen(buf);
+//er:
+//	printk("index error\n");
+//}
 
 static ssize_t accel_x_show(struct class *class, struct class_attribute *attr, char *buf)
 {
@@ -156,7 +188,7 @@ static ssize_t gyro_z_show(struct class *class, struct class_attribute *attr, ch
 	return strlen(buf);
 }
 
-static ssize_t temp_show(struct class *class, struct class_attribute *attr, char *buf)
+static ssize_t temperature_show(struct class *class, struct class_attribute *attr, char *buf)
 {
 	mpu6050_read_data();
 
@@ -164,13 +196,13 @@ static ssize_t temp_show(struct class *class, struct class_attribute *attr, char
 	return strlen(buf);
 }
 
-CLASS_ATTR(accel_x, 0444, &accel_x_show, NULL);
-CLASS_ATTR(accel_y, 0444, &accel_y_show, NULL);
-CLASS_ATTR(accel_z, 0444, &accel_z_show, NULL);
-CLASS_ATTR(gyro_x, 0444, &gyro_x_show, NULL);
-CLASS_ATTR(gyro_y, 0444, &gyro_y_show, NULL);
-CLASS_ATTR(gyro_z, 0444, &gyro_z_show, NULL);
-CLASS_ATTR(temperature, 0444, &temp_show, NULL);
+CLASS_ATTR_RO(accel_x);
+CLASS_ATTR_RO(accel_y);
+CLASS_ATTR_RO(accel_z);
+CLASS_ATTR_RO(gyro_x);
+CLASS_ATTR_RO(gyro_y);
+CLASS_ATTR_RO(gyro_z);
+CLASS_ATTR_RO(temperature);
 
 static struct class *attr_class = 0;
 
