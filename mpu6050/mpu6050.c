@@ -152,7 +152,7 @@ static void mpu6050_exit(void)
 module_init(mpu6050_init);
 module_exit(mpu6050_exit);
 
-MODULE_AUTHOR("Andriy.Khulap <andriy.khulap@globallogic.com>");
+MODULE_AUTHOR("Yaroslav Syrytsia <me@ys.lc>");
 MODULE_DESCRIPTION("mpu6050 I2C acc&gyro");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.2");
