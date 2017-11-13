@@ -10,10 +10,13 @@
 
 #define MPU6050_ATTR(_name, _func, _var)                               \
 	struct dev_ext_attribute dev_attr_##_name =                        \
-		{ __ATTR(_name, S_IRUGO, _func, NULL), (void*)(_var) }
+		{ __ATTR(_name, 0444, _func, NULL), (void *)(_var) }
 
-#define MPU6050_ATTR_POS(_name, _reg)  MPU6050_ATTR(_name, mpu6050_attr_show_pos,  _reg)
-#define MPU6050_ATTR_TEMP(_name, _reg) MPU6050_ATTR(_name, mpu6050_attr_show_temp, _reg)
+#define MPU6050_ATTR_POS(_name, _reg)                                  \
+	MPU6050_ATTR(_name, mpu6050_attr_show_pos,  _reg)
+
+#define MPU6050_ATTR_TEMP(_name, _reg)                                 \
+	MPU6050_ATTR(_name, mpu6050_attr_show_temp, _reg)
 
 static ssize_t mpu6050_attr_show_temp(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -115,7 +118,7 @@ static int mpu6050_remove(struct i2c_client *drv_client)
 	return 0;
 }
 
-static const struct i2c_device_id mpu6050_idtable [] = {
+static const struct i2c_device_id mpu6050_idtable[] = {
 	{ "gl_mpu6050", 0 },
 	{ }
 };
