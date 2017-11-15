@@ -18,6 +18,8 @@
 #define MPU6050_ATTR_TEMP(_name, _reg)                                 \
 	MPU6050_ATTR(_name, mpu6050_attr_show_temp, _reg)
 
+static struct class_compat *mpu6050_class;
+
 static ssize_t mpu6050_attr_show_temp(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct dev_ext_attribute *ea = container_of(attr, struct dev_ext_attribute, attr);
@@ -107,6 +109,13 @@ static int mpu6050_probe(struct i2c_client *drv_client, const struct i2c_device_
 		return ret;
 	}
 
+	/* Add compatibility link */
+	ret = class_compat_create_link(mpu6050_class, &drv_client->dev, NULL);
+	if (IS_ERR_VALUE(ret)) {
+		dev_info(&drv_client->dev, "cannot add sysfs compatibility link: error %d\n", ret);
+		return ret;
+	}
+
 	dev_info(&drv_client->dev, "probed\n");
 	return 0;
 }
@@ -114,6 +123,7 @@ static int mpu6050_probe(struct i2c_client *drv_client, const struct i2c_device_
 static int mpu6050_remove(struct i2c_client *drv_client)
 {
 	dev_info(&drv_client->dev, "driver removed\n");
+	class_compat_remove_link(mpu6050_class, &drv_client->dev, NULL);
 	sysfs_remove_group(&drv_client->dev.kobj, &mpu6050_sysfs_attr_group);
 	return 0;
 }
@@ -137,6 +147,13 @@ static int mpu6050_init(void)
 {
 	int ret;
 
+	/* Create /sys/class/mpu6050 */
+	mpu6050_class = class_compat_register("mpu6050");
+	if (!mpu6050_class) {
+		pr_err("mpu6050: failed to add sysfs class");
+		return -ENOMEM;
+	}
+
 	/* Create i2c driver */
 	ret = i2c_add_driver(&mpu6050_i2c_driver);
 	if (ret) {
@@ -148,6 +165,9 @@ static int mpu6050_init(void)
 
 static void mpu6050_exit(void)
 {
+	if (mpu6050_class) {
+		class_compat_unregister(mpu6050_class);
+	}
 	i2c_del_driver(&mpu6050_i2c_driver);
 	pr_info("mpu6050: module exited\n");
 }
