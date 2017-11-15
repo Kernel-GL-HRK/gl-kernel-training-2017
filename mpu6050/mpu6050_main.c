@@ -6,7 +6,7 @@
 #include <linux/i2c-dev.h>
 
 #include "mpu6050_internal.h"
-#include "mpu6050-regs.h"
+#include "mpu6050_regs.h"
 
 static int mpu6050_probe(struct i2c_client *drv_client, const struct i2c_device_id *id)
 {

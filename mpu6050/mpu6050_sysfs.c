@@ -6,7 +6,7 @@
 #include <linux/i2c-dev.h>
 #include <linux/sysfs.h>
 
-#include "mpu6050-regs.h"
+#include "mpu6050_regs.h"
 
 #define MPU6050_ATTR(_name, _func, _var)                               \
 	struct dev_ext_attribute dev_attr_##_name =                        \
