@@ -25,15 +25,18 @@ export CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 .PHONY: all clean dtb
 
-all:
+all: reader
 	$(MAKE) -C $(KERNELDIR) M=$(CURDIR) modules
 
 clean:
+	$(RM) reader
 	$(MAKE) -C $(KERNELDIR) M=$(CURDIR) clean
 
 dtb:
 	cp am335x-bone-common.dtsi $(KERNELDIR)/arch/arm/boot/dts/
 	$(MAKE) -C $(KERNELDIR) M=$(CURDIR) dtbs
 
+reader: mpu6050_reader.c
+	$(CROSS_COMPILE)gcc -std=c11 -Wall -Wextra -Wno-unused-parameter -D_GNU_SOURCE=1 $^ -o $@ -lpthread
 
 endif
