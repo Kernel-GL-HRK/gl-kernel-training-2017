@@ -4,7 +4,9 @@
 ifneq ($(KERNELRELEASE),)
 
 obj-m += mpu6050.o
-mpu6050-objs := mpu6050_sysfs.o mpu6050_main.o
+mpu6050-objs := mpu6050_main.o
+mpu6050-objs += mpu6050_sysfs.o
+mpu6050-objs += mpu6050_devfs.o
 
 else
 

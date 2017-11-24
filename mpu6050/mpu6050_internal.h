@@ -10,3 +10,11 @@ void mpu6050_sysfs_exit(void);
 
 int mpu6050_sysfs_probe(struct i2c_client *drv_client, const struct i2c_device_id *id);
 int mpu6050_sysfs_remove(struct i2c_client *drv_client);
+
+/* devfs interface API */
+
+int mpu6050_devfs_init(void);
+void mpu6050_devfs_exit(void);
+
+int mpu6050_devfs_probe(struct i2c_client *drv_client, const struct i2c_device_id *id);
+int mpu6050_devfs_remove(struct i2c_client *drv_client);

@@ -41,12 +41,14 @@ static int mpu6050_probe(struct i2c_client *drv_client, const struct i2c_device_
 	i2c_smbus_write_byte_data(drv_client, REG_PWR_MGMT_2, 0);
 
 	dev_info(&drv_client->dev, "probed\n");
+	mpu6050_devfs_probe(drv_client, id);
 	return mpu6050_sysfs_probe(drv_client, id);
 }
 
 static int mpu6050_remove(struct i2c_client *drv_client)
 {
 	mpu6050_sysfs_remove(drv_client);
+	mpu6050_devfs_remove(drv_client);
 	dev_info(&drv_client->dev, "driver removed\n");
 	return 0;
 }
@@ -71,6 +73,7 @@ static int mpu6050_init(void)
 	int ret;
 
 	mpu6050_sysfs_init();
+	mpu6050_devfs_init();
 
 	/* Create i2c driver */
 	ret = i2c_add_driver(&mpu6050_i2c_driver);
@@ -86,6 +89,7 @@ static void mpu6050_exit(void)
 {
 	i2c_del_driver(&mpu6050_i2c_driver);
 	mpu6050_sysfs_exit();
+	mpu6050_devfs_exit();
 	pr_info("mpu6050: module exited\n");
 }
 
