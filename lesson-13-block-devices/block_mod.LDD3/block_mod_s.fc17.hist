@@ -1,0 +1,131 @@
+[olej@fedora 26]$ uname -a
+Linux fedora.17 3.6.11-5.fc17.i686 #1 SMP Tue Jan 8 21:55:16 UTC 2013 i686 i686 i386 GNU/Linux
+
+[olej@fedora 26]$ cat /etc/system-release
+RFRemix release 17 (Beefy Miracle)
+
+[olej@fedora blkdev]$ make
+cc     test_blk.c   -o test_blk
+cc     test_seq.c   -o test_seq
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.ELDD_14'
+=============== making all in dubfl =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/dubfl'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/dubfl modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/dubfl/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+cc ioctl-diag.c -o ioctl-diag
+cc fchange.c -o fchange
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/dubfl'
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.LDD3'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.LDD3'
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.LDD_35'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.LDD_35'
+
+---------------------------------------------------------------------------------------------------------------
+
+[olej@fedora block_mod.LDD3]$ which hdparm
+/usr/bin/which: no hdparm in (/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/olej/.local/bin:/home/olej/bin)
+
+[olej@fedora block_mod.LDD3]$ sudo yum install hdparm
+Загружены модули: langpacks, presto, refresh-packagekit
+Разрешение зависимостей
+--> Проверка сценария
+---> Пакет hdparm.i686 0:9.39-1.fc17 помечен для установки
+--> Проверка зависимостей окончена
+
+Зависимости определены
+
+================================================================================================================================
+ Package                      Архитектура                Версия                              Репозиторий                  Размер
+================================================================================================================================
+Установка:
+ hdparm                       i686                       9.39-1.fc17                         fedora                        80 k
+
+Результат операции
+================================================================================================================================
+Установка   1 Пакет
+
+Объем загрузки: 80 k
+Объем изменений: 147 k
+Продолжить? [y/N]: y
+Загрузка пакетов:
+hdparm-9.39-1.fc17.i686.rpm                                                                              |  80 kB     00:00     
+Проверка сценария
+Проверяем сценарий
+Проверка сценария прошла успешно
+Выполнение сценария
+  Установка   : hdparm-9.39-1.fc17.i686                                                                                     1/1 
+  Проверка    : hdparm-9.39-1.fc17.i686                                                                                     1/1 
+
+Установлено:
+  hdparm.i686 0:9.39-1.fc17                                                                                                     
+
+Выполнено!
+
+---------------------------------------------------------------------------------------------------------------
+
+[olej@fedora block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=0
+
+[olej@fedora block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 325.76 MB/sec
+
+[olej@fedora block_mod.LDD3]$ sudo rmmod block_mod_s
+
+---------------------------------------------------------------------------------------------------------------
+
+[olej@fedora block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=1
+
+[olej@fedora block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.02 seconds = 165.84 MB/sec
+
+[olej@fedora block_mod.LDD3]$ sudo rmmod block_mod_s
+
+---------------------------------------------------------------------------------------------------------------
+
+[olej@fedora block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=2
+
+[olej@fedora block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 341.24 MB/sec
+
+[olej@fedora block_mod.LDD3]$ sudo rmmod block_mod_s
+
+---------------------------------------------------------------------------------------------------------------

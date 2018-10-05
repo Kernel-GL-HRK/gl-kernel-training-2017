@@ -1,0 +1,224 @@
+26.04.2014
+==========
+
+[olej@fedora 26]$ uname -a
+Linux fedora.17 3.6.11-5.fc17.i686 #1 SMP Tue Jan 8 21:55:16 UTC 2013 i686 i686 i386 GNU/Linux
+
+[olej@fedora 26]$ cat /etc/system-release
+RFRemix release 17 (Beefy Miracle)
+
+
+[olej@fedora dubfl]$ time dd if=/dev/zero of=./XXX bs=512 count=10000
+10000+0 записей считано
+10000+0 записей написано
+ скопировано 5120000 байт (5,1 MB), 0,0414243 c, 124 MB/c
+
+real	0m0.086s
+user	0m0.007s
+sys	0m0.049s
+
+[olej@fedora dubfl]$ ls -l XXX
+-rw-rw-r--. 1 olej olej 5120000 апр.  26 16:18 XXX
+
+
+[olej@fedora dubfl]$ sudo insmod dubfl.ko file=XXX
+
+[olej@fedora dubfl]$ dmesg | tail -n20
+[ 7187.451075] ! ioctl unknown command
+[ 7187.464955] + ioctl cmd=5331
+[ 7187.464958] ! ioctl unknown command
+[ 7187.526519] + ioctl cmd=5331
+[ 7187.526525] ! ioctl unknown command
+[ 7194.183675] + ioctl cmd=1261
+[ 7194.183678] ! ioctl unknown command
+[ 7194.184548] + ioctl cmd=31F
+[ 7194.184550] ! ioctl unknown command
+[ 7570.994890] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[ 7570.994921] + open file: XXX, length 5120000
+[ 7570.995225] + read from file XXX 10000 sektors
+[ 7571.007164] + open device /dev/dbf
+[ 7571.007480]  dbf: unknown partition table
+[ 7571.007576] + close device /dev/dbf
+[ 7571.007641] + device dbf has capacity 10000 sectors
+[ 7571.020407] + open device /dev/dbf
+[ 7571.020407] + ioctl cmd=5331
+[ 7571.020407] ! ioctl unknown command
+[ 7571.020407] + close device /dev/dbf
+
+
+[olej@fedora dubfl]$ ls -l /dev/db*
+brw-rw----. 1 root disk 252, 1 апр.  26 16:20 /dev/dbf
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+[olej@fedora dubfl]$ sudo hdparm -t /dev/dbf
+
+/dev/dbf:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 393.04 MB/sec
+
+
+[olej@fedora dubfl]$ sudo mkfs.vfat /dev/dbf
+mkfs.vfat 3.0.12 (29 Oct 2011)
+
+[olej@fedora dubfl]$ df | grep dbf
+
+----------------------------------------------------------------------------------------------------------------------
+
+[olej@fedora dubfl]$ ls /mnt
+common
+
+[olej@fedora dubfl]$ sudo mount -t vfat /dev/dbf /mnt/common/
+
+[olej@fedora dubfl]$ df | grep dbf
+/dev/dbf              4974            0     4974            0% /mnt/common
+
+----------------------------------------------------------------------------------------------------------------------
+
+[olej@fedora blkdev]$ pwd
+/home/olej/2014-WORK/blkdev
+
+[olej@fedora blkdev]$ sudo cp -R block_mod.ELDD_14 /mnt/common
+
+[olej@fedora blkdev]$ tree /mnt/common/
+/mnt/common/
+└── block_mod.ELDD_14
+    ├── block_mod_e.c
+    ├── block_mod_e.fc15.hist
+    ├── block_mod_e.ko
+    ├── block_mod_orig.tgz
+    └── Makefile
+
+1 directory, 5 files
+
+
+[olej@fedora dubfl]$ lsmod | head -n5
+Module                  Size  Used by
+vfat                   17209  1 
+fat                    54645  1 vfat
+dubfl                  13074  1 
+tcp_lp                 12584  0 
+
+----------------------------------------------------------------------------------------------------------------------
+
+[olej@fedora dubfl]$ sudo umount /mnt/common
+
+[olej@fedora dubfl]$ lsmod | head -n5
+Module                  Size  Used by
+vfat                   17209  0 
+fat                    54645  1 vfat
+dubfl                  13074  0 
+tcp_lp                 12584  0 
+
+[olej@fedora dubfl]$ sudo rmmod dubfl
+
+[olej@fedora dubfl]$ lsmod | head -n5
+Module                  Size  Used by
+vfat                   17209  0 
+fat                    54645  1 vfat
+tcp_lp                 12584  0 
+lockd                  77991  0 
+
+[olej@fedora dubfl]$ ls -l /dev/db*
+ls: невозможно получить доступ к /dev/db*: Нет такого файла или каталога
+
+----------------------------------------------------------------------------------------------------------------------
+
+[olej@fedora dubfl]$ sudo insmod dubfl.ko
+
+[olej@fedora dubfl]$ dmesg | tail -n20
+[19327.681436] Process insmod (pid: 7205, ti=eb712000 task=ebb54b60 task.ti=eb712000)
+[19327.681437] Stack:
+[19327.681439]  f098a1e0 00000000 f098a2a8 eb713ebc f0988658 000000fc ee0840e0 000000fc
+[19327.681444]  eb713ebc c06552d4 c094d37b 00000000 00000006 f0989120 f098a060 f098d000
+[19327.681449]  f098a2a8 eb713ed4 f098d061 f098923c f098d000 00001000 00000000 eb713f04
+[19327.681454] Call Trace:
+[19327.681459]  [<f0988658>] load_file+0x1c/0x9c4 [dubfl]
+[19327.681464]  [<c06552d4>] ? register_blkdev+0x104/0x130
+[19327.681486]  [<c094d37b>] ? printk+0x4d/0x4f
+[19327.681490]  [<f098d000>] ? 0xf098cfff
+[19327.681493]  [<f098d061>] blk_init+0x61/0x1000 [dubfl]
+[19327.681496]  [<f098d000>] ? 0xf098cfff
+[19327.681499]  [<c0401202>] do_one_initcall+0x112/0x160
+[19327.681503]  [<c0496d42>] ? set_section_ro_nx+0x62/0x80
+[19327.681506]  [<c049964c>] sys_init_module+0xfec/0x1d60
+[19327.681512]  [<c095c3df>] sysenter_do_call+0x12/0x28
+[19327.681513] Code: 8b 7d fc 89 ec 5d c3 8d b4 26 00 00 00 00 55 89 e5 83 ec 0c 89 5d f4 89 75 f8 89 7d fc 66 66 66 66 90 89 c3 89 d6 89 c7 49 78 08 <ac> aa 84 c0 75 f7 f3 aa 89 d8 8b 75 f8 8b 5d f4 8b 7d fc 89 ec
+[19327.681542] EIP: [<c067397d>] strncpy+0x1d/0x40 SS:ESP 0068:eb713e78
+[19327.681546] CR2: 0000000000000000
+[19327.681548] ---[ end trace 04ee23f45f9b226c ]---
+
+
+[olej@fedora dubfl]$ ls -l /dev/db*
+ls: невозможно получить доступ к /dev/db*: Нет такого файла или каталога
+
+
+[olej@fedora dubfl]$ lsmod | head -n5
+Module                  Size  Used by
+dubfl                  19572  1 
+vfat                   17209  0 
+fat                    54645  1 vfat
+tcp_lp                 12584  0 
+
+
+[olej@fedora dubfl]$ reboot --help
+reboot [OPTIONS...]
+
+Reboot the system.
+
+     --help      Show this help
+     --halt      Halt the machine
+  -p --poweroff  Switch off the machine
+     --reboot    Reboot the machine
+  -f --force     Force immediate halt/power-off/reboot
+  -w --wtmp-only Don't halt/power-off/reboot, just write wtmp record
+  -d --no-wtmp   Don't write wtmp record
+  -n --no-sync   Don't sync before halt/power-off/reboot
+     --no-wall   Don't send wall message before halt/power-off/reboot
+
+[olej@fedora dubfl]$ sudo reboot
+...
+
+======================================================================================================================
+
+bash-4.2$ ping 192.168.1.20
+PING 192.168.1.20 (192.168.1.20) 56(84) bytes of data.
+64 bytes from 192.168.1.20: icmp_seq=1 ttl=64 time=2005 ms
+64 bytes from 192.168.1.20: icmp_seq=2 ttl=64 time=1005 ms
+64 bytes from 192.168.1.20: icmp_seq=3 ttl=64 time=5.52 ms
+64 bytes from 192.168.1.20: icmp_seq=4 ttl=64 time=0.312 ms
+64 bytes from 192.168.1.20: icmp_seq=5 ttl=64 time=0.307 ms
+^C
+--- 192.168.1.20 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4002ms
+rtt min/avg/max/mdev = 0.307/603.447/2005.582/801.585 ms, pipe 3
+
+
+bash-4.2$ ssh olej@192.168.1.20
+olej@192.168.1.20's password: 
+Last login: Sat Apr 26 16:00:49 2014 from 192.168.1.5
+
+
+[olej@fedora dubfl]$ sudo insmod dubfl.ko file=XXX
+
+[olej@fedora dubfl]$ ls -l /dev/db*
+brw-rw----. 1 root disk 252, 1 апр.  26 19:44 /dev/dbf
+
+----------------------------------------------------------------------------------------------------------------------
+
+[olej@fedora dubfl]$ sudo mount -t vfat /dev/dbf /mnt/common/
+
+[olej@fedora dubfl]$ ls -R /mnt/common
+/mnt/common:
+block_mod.ELDD_14
+
+/mnt/common/block_mod.ELDD_14:
+block_mod_e.c  block_mod_e.fc15.hist  block_mod_e.ko  block_mod_orig.tgz  Makefile
+
+
+[olej@fedora dubfl]$ df | grep dbf
+/dev/dbf              4974          176     4798            4% /mnt/common
+
+----------------------------------------------------------------------------------------------------------------------
+
+

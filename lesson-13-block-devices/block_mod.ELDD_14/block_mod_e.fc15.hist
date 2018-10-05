@@ -1,0 +1,139 @@
+Sreekrishnan Venkateswaran, «Essential Linux Device Drivers», Prentice Hall, 2008, p.714.
+Сайт книги: http://elinuxdd.com 
+Архив кодов примеров: http://elinuxdd.com/~elinuxdd/elinuxdd.docs/listings/ 
+
+========================================================================
+
+24.04.2014
+==========
+
+[olej@nvidia block_mod.LDD_35]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+[olej@nvidia block_mod.LDD_35]$ 
+[olej@nvidia etc]$ cat /etc/system-release 
+RFRemix release 15.1 (Lovelock)
+
+
+[olej@nvidia block_mod.ELDD_14]$ make
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14 modules
+make[1]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[1]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.ELDD_14]$ sudo insmod block_mod_e.ko 
+
+[olej@nvidia block_mod.ELDD_14]$ dmesg | tail -n15
+[ 2926.785801] + reading at sector 7928, 8 sectors 
+[ 2926.786609] + reading at sector 8128, 8 sectors 
+[ 2926.786634] + reading at sector 7936, 8 sectors 
+[ 2926.786647] + reading at sector 7792, 8 sectors 
+[ 2926.786676] + reading at sector 2048, 8 sectors 
+[ 2926.786693] + reading at sector 24, 8 sectors 
+[ 2926.786707] + reading at sector 56, 8 sectors 
+[ 2926.786720] + reading at sector 120, 8 sectors 
+[ 2926.786734] + reading at sector 16, 8 sectors 
+[ 2926.786748] + reading at sector 128, 8 sectors 
+[ 2926.786761] + reading at sector 64, 8 sectors 
+[ 2926.786781] + reading at sector 512, 8 sectors 
+[ 2926.786795] + reading at sector 32, 8 sectors 
+[ 2926.786813] + reading at sector 4096, 8 sectors 
+[ 2926.791733] + reading at sector 0, 8 sectors 
+
+
+[olej@nvidia block_mod.ELDD_14]$ ls -l /dev/xbe
+brw-rw----. 1 root disk 252, 0 апр.  24 10:33 /dev/xbe
+
+
+[olej@nvidia block_mod.ELDD_14]$ lsmod | grep block_mod_e
+block_mod_e            12835  0 
+
+[olej@nvidia block_mod.ELDD_14]$ lsmod | grep block_
+block_mod_s            13203  0 
+block_mod_c            12822  0 
+block_mod_e            12835  0 
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.ELDD_14]$ sudo fdisk /dev/xbe
+Устройство не содержит ни верной таблицы разделов DOS, ни метки диска Sun, SGI или OSF
+Building a new DOS disklabel with disk identifier 0x6c52d972.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Команда (m для справки): o
+Building a new DOS disklabel with disk identifier 0x712834ba.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Команда (m для справки): w        
+Таблица разделов была изменена!
+
+Вызывается ioctl() для перечитывания таблицы разделов.
+
+WARNING: Re-reading the partition table failed with error 22: Недопустимый аргумент.
+The kernel still uses the old table. The new table will be used at
+the next reboot or after you run partprobe(8) or kpartx(8)
+Синхронизируются диски.
+
+
+
+
+[olej@nvidia block_mod.ELDD_14]$ sudo fdisk -l /dev/xbe
+
+Диск /dev/xbe: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x712834ba
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.ELDD_14]$ sudo mkfs.msdos /dev/xbe
+mkfs.msdos 3.0.11 (24 Dec 2010)
+
+[olej@nvidia block_mod.ELDD_14]$ sudo mkdir /mnt/xbe
+
+[olej@nvidia block_mod.ELDD_14]$ sudo mount -t msdos /dev/xbe /mnt/xbe
+
+[olej@nvidia block_mod.ELDD_14]$ mount | grep xbe
+/dev/xbe on /mnt/xbe type msdos (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,errors=remount-ro)
+
+[olej@nvidia block_mod.ELDD_14]$ sudo cp block_mod_e.c /mnt/xbe
+
+[olej@nvidia block_mod.ELDD_14]$ ls -l /mnt/xbe
+итого 4
+-rwxr-xr-x. 1 root root 2475 апр.  24 11:18 block_mo.c
+
+[olej@nvidia block_mod.LDD_35]$ df | grep xbe
+/dev/xbe                  4072         4      4068   1% /mnt/xbe
+
+
+[olej@nvidia block_mod.ELDD_14]$ tree /mnt/xbe
+/mnt/xbe
+`-- block_mo.c
+
+0 directories, 1 file
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.ELDD_14]$ sudo hdparm -t /dev/xbe
+
+/dev/xbe:
+ Timing buffered disk reads:   4 MB in  0.04 seconds = 107.52 MB/sec
+
+
+========================================================================
+

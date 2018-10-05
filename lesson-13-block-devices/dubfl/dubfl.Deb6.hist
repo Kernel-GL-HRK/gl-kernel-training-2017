@@ -1,0 +1,206 @@
+14.11.2012
+==========
+
+bash-4.2$ time dd if=/dev/zero of=./XXX bs=512 count=10000
+10000+0 записей считано
+10000+0 записей написано
+ скопировано 5120000 байт (5,1 MB), 0,0549075 c, 93,2 MB/c
+
+real	0m0.058s
+user	0m0.001s
+sys	0m0.056s
+
+bash-4.2$ ls -l XXX
+-rw-rw-r-- 1 olej olej 5120000 нояб. 14 13:05 XXX
+
+---------------------------------------------------------------------------------------------------
+
+[olej@fedora14vm removable]$ dd if=/dev/zero of=./YYY bs=512 count=1000
+1000+0 записей считано
+1000+0 записей написано
+ скопировано 512000 байт (512 kB), 0,00504925 c, 101 MB/c
+
+===================================================================================================
+
+15.11.2012
+==========
+
+olej@debian:~/WORK/examples.DRAFT/blkdev/rem1$ uname -a
+Linux debian 3.2.0-2-686-pae #1 SMP Fri Jun 1 18:56:14 UTC 2012 i686 GNU/Linux
+
+olej@debian:~/WORK/examples.DRAFT/blkdev/rem1$ cat /etc/debian_version 
+wheezy/sid
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# insmod dubfl.ko file=XXX  
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# dmesg | tail -n7
+[19302.914180] + close file: YYY
+[19577.244151] + open file: XXX
+[19577.244219] + offset 5120000 bytes
+[19577.244219] + offset 0 bytes
+[19577.245326] + --------add_disk---------------
+[19577.247842]  dbf: unknown partition table
+[19577.248343] + device dbf has capacity 10000 sectors
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# ls -l /dev/db*
+brw-rw---T 1 root disk 254, 1 Ноя 15 23:11 /dev/dbf
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# ../test_seq -v -l0 /dev/dbf
+объём устройства 5120000 байт
+ошибка записи: No space left on device
+записано 5120000 байт
+ошибка чтения: No space left on device
+считано 5120000 байт
+считанное в точности соответствует записанному!
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# hdparm -t /dev/dbf
+
+/dev/dbf:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 319.39 MB/sec
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# hdparm -g /dev/dbf
+
+/dev/dbf:
+ geometry      = 156/4/16, sectors = 10000, start = 16
+
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# lsmod | head -n3
+Module                  Size  Used by
+dubfl                  12553  0 
+mperf                  12421  0 
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/rem1# rmmod dubfl
+
+===================================================================================================
+
+17.11.2012
+==========
+
+olej@debian:~/WORK/examples.DRAFT/blkdev/remram$ make
+make -C /lib/modules/3.2.0-2-686-pae/build M=/home/olej/WORK/examples.DRAFT/blkdev/remram modules
+make[1]: Entering directory `/usr/src/linux-headers-3.2.0-2-686-pae'
+  CC [M]  /home/olej/WORK/examples.DRAFT/blkdev/remram/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/WORK/examples.DRAFT/blkdev/remram/dubfl.mod.o
+  LD [M]  /home/olej/WORK/examples.DRAFT/blkdev/remram/dubfl.ko
+make[1]: Leaving directory `/usr/src/linux-headers-3.2.0-2-686-pae'
+cc ioctl-diag.c -o ioctl-diag
+cc fchange.c -o fchange
+
+---------------------------------------------------------------------------------------------------
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/remram# insmod dubfl.ko file=YYY debug=1
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/remram# dmesg | tail -n30
+[ 8358.708366] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[ 8358.708871] + open file: YYY
+[ 8358.708875] + offset 512000 bytes
+[ 8358.708877] + offset 0 bytes
+[ 8358.727471] + read from file YYY 1000 sektors
+[ 8358.727984] + open device /dev/dbf
+[ 8358.728084] # entering request routine: sector=0 length=8
+[ 8358.728470] # entering request routine: sector=8 length=8
+[ 8358.728495] # entering request routine: sector=24 length=8
+[ 8358.728505]  dbf: unknown partition table
+[ 8358.728546] + close device /dev/dbf
+[ 8358.728586] + device dbf has capacity 1000 sectors
+[ 8358.736676] + open device /dev/dbf
+[ 8358.736856] + ioctl cmd=5331
+[ 8358.736857] + ioctl cmd=5331
+[ 8358.736858] ! ioctl unknown command
+[ 8358.736935] # entering request routine: sector=0 length=8
+[ 8358.737207] # entering request routine: sector=24 length=8
+[ 8358.737703] # entering request routine: sector=8 length=8
+[ 8358.737748] # entering request routine: sector=56 length=8
+[ 8358.737890] # entering request routine: sector=120 length=8
+[ 8358.738008] # entering request routine: sector=64 length=8
+[ 8358.738179] # entering request routine: sector=16 length=8
+[ 8358.738311] # entering request routine: sector=128 length=8
+[ 8358.738476] # entering request routine: sector=512 length=8
+[ 8358.738600] # entering request routine: sector=32 length=8
+[ 8358.738708] + close device /dev/dbf
+[ 8358.750016] + open device /dev/dbf
+[ 8358.750084] # entering request routine: sector=0 length=8
+[ 8358.750906] + close device /dev/dbf
+
+olej@debian:~/WORK/examples.DRAFT/blkdev/remram$ ./fchange
+устройство /dev/dbf : Permission denied
+
+
+olej@debian:~/WORK/examples.DRAFT/blkdev/remram$ sudo ./fchange
+[sudo] password for olej: 
+команда (h-подсказка): i
+связанный файл: YYY
+размер (байт): 512000
+код возврата модуля: 0
+команда (h-подсказка): h
+    s - сохранить содержимое диска
+    u - отсоединить диск от образа
+    l <path> - связать диск с образом
+    i - информация о диске
+    h - подсказка
+    q - выход
+команда (h-подсказка): u
+код возврата модуля: 0
+команда (h-подсказка): i
+связанный файл: 
+размер (байт): 0
+код возврата модуля: 0
+команда (h-подсказка): l
+ошибочный формат команды
+команда (h-подсказка): l XXX
+/home/olej/WORK/examples.DRAFT/blkdev/remram
+полный путь файла образа: /home/olej/WORK/examples.DRAFT/blkdev/remram/XXX
+код возврата модуля: 0
+команда (h-подсказка): i
+связанный файл: /home/olej/WORK/examples.DRAFT/blkdev/remram/XXX
+размер (байт): 5120000
+код возврата модуля: 0
+команда (h-подсказка): q
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/remram# dmesg | tail -n130 | grep ^+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/remram# dmesg | tail -n130 | grep +
+[   53.104370] colord[2422]: segfault at 8 ip 08052674 sp bfc32c80 error 4 in colord[8048000+20000]
+[ 8358.708366] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[ 8358.708871] + open file: YYY
+[ 8358.708875] + offset 512000 bytes
+[ 8358.708877] + offset 0 bytes
+[ 8358.727471] + read from file YYY 1000 sektors
+[ 8358.727984] + open device /dev/dbf
+[ 8358.728546] + close device /dev/dbf
+[ 8358.728586] + device dbf has capacity 1000 sectors
+[ 8358.736676] + open device /dev/dbf
+[ 8358.736856] + ioctl cmd=5331
+[ 8358.736857] + ioctl cmd=5331
+[ 8358.738708] + close device /dev/dbf
+[ 8358.750016] + open device /dev/dbf
+[ 8358.750906] + close device /dev/dbf
+[ 8522.388659] + open device /dev/dbf
+[ 8525.984192] + ioctl cmd=80AC4401
+[ 8539.232310] + ioctl cmd=40004402
+[ 8539.232440] + unlink file: YYY
+[ 8540.983673] + ioctl cmd=80AC4401
+[ 8549.520464] + ioctl cmd=C0A14402
+[ 8549.520468] + file path = /home/olej/WORK/examples.DRAFT/blkdev/remram/XXX
+[ 8549.520486] + open file: YYY
+[ 8549.520489] + offset 5120000 bytes
+[ 8549.520491] + offset 0 bytes
+[ 8549.621237] + read from file YYY 10000 sektors
+[ 8553.039982] + ioctl cmd=80AC4401
+[ 8559.400203] + close device /dev/dbf
+[ 8559.411379] + open device /dev/dbf
+[ 8559.411560] + ioctl cmd=5331
+[ 8559.411561] + ioctl cmd=5331
+[ 8559.412383] + close device /dev/dbf
+[ 8559.423020] + open device /dev/dbf
+[ 8559.423812] + close device /dev/dbf
+
+
+---------------------------------------------------------------------------------------------------
+===================================================================================================

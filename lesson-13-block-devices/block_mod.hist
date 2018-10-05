@@ -1,0 +1,1371 @@
+09.11.2012
+==========
+
+bash-4.2$ make
+make -C /lib/modules/3.5.2-1.fc17.i686.PAE/build M=/home/olej/2012_WORK/examples.kernel.DRAFT/blkdev/LDD35 modules
+make[1]: Вход в каталог `/usr/src/kernels/3.5.2-1.fc17.i686.PAE'
+  CC [M]  /home/olej/2012_WORK/examples.kernel.DRAFT/blkdev/LDD35/block_mod.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2012_WORK/examples.kernel.DRAFT/blkdev/LDD35/block_mod.mod.o
+  LD [M]  /home/olej/2012_WORK/examples.kernel.DRAFT/blkdev/LDD35/block_mod.ko
+make[1]: Выход из каталога `/usr/src/kernels/3.5.2-1.fc17.i686.PAE'
+
+
+bash-4.2$ sudo insmod ./block_mod.ko 
+Error: could not insert module ./block_mod.ko: Cannot allocate memory
+
+
+bash-4.2$ lsmod | grep block
+mmc_block              26482  2 
+mmc_core               96971  3 mmc_block,sdhci,tifm_sd
+
+
+
+bash-4.2$ free
+             total       used       free     shared    buffers     cached
+Mem:       2057664    1904360     153304          0      36444     430032
+-/+ buffers/cache:    1437884     619780
+Swap:      3071996     269808    2802188
+
+
+bash-4.2$ dmesg | tail -n100 | grep order
+[19220.465584] order= 0, pages=     1, size=     4096 - vmalloc OK
+[19220.465594] order= 1, pages=     2, size=     8192 - vmalloc OK
+[19220.465601] order= 2, pages=     4, size=    16384 - vmalloc OK
+[19220.465609] order= 3, pages=     8, size=    32768 - vmalloc OK
+[19220.465619] order= 4, pages=    16, size=    65536 - vmalloc OK
+[19220.465635] order= 5, pages=    32, size=   131072 - vmalloc OK
+[19220.465664] order= 6, pages=    64, size=   262144 - vmalloc OK
+[19220.465728] order= 7, pages=   128, size=   524288 - vmalloc OK
+[19220.465851] order= 8, pages=   256, size=  1048576 - vmalloc OK
+[19220.466106] order= 9, pages=   512, size=  2097152 - vmalloc OK
+[19220.466572] order=10, pages=  1024, size=  4194304 - vmalloc OK
+[19220.467552] order=11, pages=  2048, size=  8388608 - vmalloc OK
+[19220.469551] order=12, pages=  4096, size= 16777216 - vmalloc OK
+[19220.476919] order=13, pages=  8192, size= 33554432 - vmalloc OK
+[19220.508773] order=14, pages= 16384, size= 67108864 - vmalloc OK
+[19220.514311] insmod: page allocation failure: order:0, mode:0xd2
+[19220.523658] order=15, pages= 32768, size=134217728 - vmalloc failed
+
+
+bash-4.2$ sudo insmod memmax.ko mode=2
+Error: could not insert module memmax.ko: Operation not permitted
+
+
+-------------------------------------------------------------------------------------------------
+
+bash-4.2$ free
+             total       used       free     shared    buffers     cached
+Mem:       2057664    1904360     153304          0      36444     430032
+-/+ buffers/cache:    1437884     619780
+Swap:      3071996     269808    2802188
+
+
+bash-4.2$ sudo insmod ./block_mod.ko size=10
+
+bash-4.2$ lsmod | grep block
+block_mod              12709  0 
+mmc_block              26482  2 
+mmc_core               96971  3 mmc_block,sdhci,tifm_sd
+
+
+bash-4.2$ free
+             total       used       free     shared    buffers     cached
+Mem:       2057664    1917656     140008          0      38472     432116
+-/+ buffers/cache:    1447068     610596
+Swap:      3071996     271740    2800256
+
+
+bash-4.2$ ls -l /dev/my*
+brw-rw---- 1 root disk 252, 0 нояб.  9 13:05 /dev/mybdrv
+
+
+
+bash-4.2$ sudo fdisk /dev/mybdrv
+Welcome to fdisk (util-linux 2.21.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x6a5b5009.
+
+Команда (m для справки): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+Номер раздела (1-4, по умолчанию 1): 
+Используется значение по умолчанию 1
+Первый sector (2048-20479, по умолчанию 2048): 
+Используется значение по умолчанию 2048
+Last sector, +sectors or +size{K,M,G} (2048-20479, по умолчанию 20479): 
+Используется значение по умолчанию 20479
+Partition 1 of type Linux and of size 9 MiB is set
+
+Команда (m для справки): p
+
+Диск /dev/mybdrv: 10 МБ, 10485760 байт
+255 heads, 63 sectors/track, 1 cylinders, всего 20480 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x6a5b5009
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+/dev/mybdrv1            2048       20479        9216   83  Linux
+
+Команда (m для справки): w
+Таблица разделов была изменена!
+
+Вызывается ioctl() для перечитывания таблицы разделов.
+Синхронизируются диски.
+
+
+
+
+
+bash-4.2$ ls -l /dev/my*
+brw-rw---- 1 root disk 252, 0 нояб.  9 13:13 /dev/mybdrv
+brw-rw---- 1 root disk 252, 1 нояб.  9 13:13 /dev/mybdrv1
+
+
+
+bash-4.2$ sudo mkfs.ext2 /dev/mybdrv1
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+2304 inodes, 9216 blocks
+460 blocks (4.99%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=9437184
+2 block groups
+8192 blocks per group, 8192 fragments per group
+1152 inodes per group
+Superblock backups stored on blocks: 
+	8193
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+
+
+bash-4.2$ ls /mnt/iso
+
+bash-4.2$ sudo mount /dev/mybdrv1 /mnt/iso/
+
+bash-4.2$ mount | grep /mnt
+/dev/mybdrv1 on /mnt/iso type ext2 (rw,relatime)
+
+bash-4.2$ ls -l /mnt/iso/
+итого 12
+drwx------ 2 root root 12288 нояб.  9 13:16 lost+found
+
+
+[root@notebook ~]# echo 12345 > /mnt/iso/12345
+
+[root@notebook ~]# ls -l /mnt/iso/
+итого 13
+-rw-r--r-- 1 root root     6 нояб.  9 13:23 12345
+drwx------ 2 root root 12288 нояб.  9 13:16 lost+found
+
+
+[root@notebook ~]# df | grep /mnt/iso
+/dev/mybdrv1          8919           85     8374            2% /mnt/iso
+
+
+
+[root@notebook ~]# ls -l /dev/my*
+brw-rw---- 1 root disk 252, 0 нояб.  9 13:13 /dev/mybdrv
+brw-rw---- 1 root disk 252, 1 нояб.  9 13:16 /dev/mybdrv1
+
+[root@notebook ~]# lsmod | head -n 4
+Module                  Size  Used by
+block_mod              12709  2 
+tcp_lp                 12583  0 
+fuse                   71512  2 
+
+[root@notebook ~]# rmmod block_mod
+Error: Module block_mod is in use
+
+
+
+[root@notebook ~]# umount /dev/mybdrv1 
+
+[root@notebook ~]# rmmod block_mod
+
+[root@notebook ~]# ls -l /dev/my*
+ls: невозможно получить доступ к /dev/my*: Нет такого файла или каталога
+
+
+bash-4.2$ dmesg | tail -n5
+[42394.813706] writing at sector 2050, 2 sectors 
+[42394.813729] leaving request
+[42394.813736] entering request routine
+[42394.813739] leaving request
+[42396.778488] module successfully unloaded, Major No. = 252
+
+
+-------------------------------------------------------------------------------------------------
+
+bash-4.2$ free
+             total       used       free     shared    buffers     cached
+Mem:       2057664    1906348     151316          0      42324     528192
+-/+ buffers/cache:    1335832     721832
+Swap:      3071996     427356    2644640
+
+
+[root@notebook block_mod.LDD_35]# insmod block_mod_c.ko 
+
+[root@notebook block_mod.ELDD_14]# insmod block_mod_e.ko 
+
+[root@notebook block_mod.ELDD_14]# lsmod | grep ^block
+block_mod_e            12728  0 
+block_mod_c            12709  0 
+
+
+[root@notebook block_mod.ELDD_14]# free
+             total       used       free     shared    buffers     cached
+Mem:       2057664    1911712     145952          0      44588     495540
+-/+ buffers/cache:    1371584     686080
+Swap:      3071996     429652    2642344
+
+
+[root@notebook block_mod.ELDD_14]# ls -l /dev/x*
+brw-rw---- 1 root disk 252, 0 нояб.  9 20:06 /dev/xbc
+brw-rw---- 1 root disk 251, 0 нояб.  9 20:06 /dev/xbe
+
+
+
+[root@notebook block_mod.ELDD_14]# hdparm -Tt /dev/xbc
+
+/dev/xbc:
+ Timing cached reads:   2264 MB in  2.00 seconds = 1133.14 MB/sec
+ Timing buffered disk reads:  16 MB in  0.07 seconds = 238.02 MB/sec
+
+
+
+
+[root@notebook block_mod.ELDD_14]# hdparm -Tt /dev/xbe
+
+/dev/xbe:
+ Timing cached reads:   2194 MB in  2.00 seconds = 1097.92 MB/sec
+ Timing buffered disk reads:  16 MB in  0.06 seconds = 251.02 MB/sec
+
+
+
+
+[root@notebook block_mod.ELDD_14]# mkfs.ext2 /dev/xbc
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+4096 inodes, 16384 blocks
+819 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=16777216
+2 block groups
+8192 blocks per group, 8192 fragments per group
+2048 inodes per group
+Superblock backups stored on blocks: 
+	8193
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+
+
+
+[root@notebook block_mod.ELDD_14]# mkfs.ext2 /dev/xbe
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+4096 inodes, 16384 blocks
+819 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=16777216
+2 block groups
+8192 blocks per group, 8192 fragments per group
+2048 inodes per group
+Superblock backups stored on blocks: 
+	8193
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+
+
+[root@notebook block_mod.ELDD_14]# mkdir /mnt/dskc
+
+[root@notebook block_mod.ELDD_14]# mkdir /mnt/dske
+
+[root@notebook block_mod.ELDD_14]# chmod a+rwx /mnt/dskc
+
+[root@notebook block_mod.ELDD_14]# chmod a+rwx /mnt/dske
+
+
+[root@notebook block_mod.ELDD_14]# mount /dev/xbc /mnt/dskc
+
+[root@notebook block_mod.ELDD_14]# mount /dev/xbe /mnt/dske
+
+
+[root@notebook block_mod.ELDD_14]# tree /mnt
+/mnt
+├── dskc
+│   └── lost+found
+├── dske
+│   └── lost+found
+├── efi
+└── iso
+
+6 directories, 0 files
+
+
+[root@notebook block_mod.ELDD_14]# mount | grep /mnt
+/dev/xbc on /mnt/dskc type ext2 (rw,relatime)
+/dev/xbe on /mnt/dske type ext2 (rw,relatime)
+
+
+[root@notebook block_mod.ELDD_14]# df | grep /mnt
+/dev/xbc             15863          140    14904            1% /mnt/dskc
+/dev/xbe             15863          140    14904            1% /mnt/dske
+
+
+[root@notebook block_mod.ELDD_14]# fdisk -l /dev/xbe
+
+Диск /dev/xbe: 16 МБ, 16777216 байт
+255 heads, 63 sectors/track, 2 cylinders, всего 32768 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+
+
+[root@notebook block_mod.ELDD_14]# fdisk -l /dev/xbc
+
+Диск /dev/xbc: 16 МБ, 16777216 байт
+255 heads, 63 sectors/track, 2 cylinders, всего 32768 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+
+
+[root@notebook block_mod.ELDD_14]# echo qwertyuiop[] >> /mnt/dskc/f
+
+[root@notebook block_mod.ELDD_14]# ls -l /mnt/dskc/
+итого 13
+-rw-r--r-- 1 root root    13 нояб.  9 20:36 f
+drwx------ 2 root root 12288 нояб.  9 20:25 lost+found
+
+[root@notebook block_mod.ELDD_14]# cp /mnt/dskc/f /mnt/dske/f
+
+[root@notebook block_mod.ELDD_14]# ls -l /mnt/dske/
+итого 13
+-rw-r--r-- 1 root root    13 нояб.  9 20:37 f
+drwx------ 2 root root 12288 нояб.  9 20:26 lost+found
+
+[root@notebook block_mod.ELDD_14]# cat /mnt/dske/f
+qwertyuiop[]
+
+
+
+
+
+[root@notebook block_mod.LDD_35]# ./block_test 
+**** return code from write = 8488
+**** retrun code from lseek(1000) = 1000 
+**** retrun code from read vec[250] = 4, vec[250] = 250 
+
+
+[root@notebook block_mod.LDD_35]# mkfs.ext2 /dev/xbc
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+4096 inodes, 16384 blocks
+819 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=16777216
+2 block groups
+8192 blocks per group, 8192 fragments per group
+2048 inodes per group
+Superblock backups stored on blocks: 
+	8193
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+
+[root@notebook block_mod.LDD_35]# mount /dev/xbc /mnt/dskc
+
+[root@notebook block_mod.LDD_35]# ./block_test 
+**** return code from write = 8488
+**** retrun code from lseek(1000) = 1000 
+**** retrun code from read vec[250] = 4, vec[250] = 250 
+
+[root@notebook block_mod.LDD_35]# ls -l /mnt/dskc
+итого 10331131637612
+b--sr-srwt 11785 959711591 151652963 56, 52 нояб. 17  1999 lost+found
+
+
+
+[root@notebook block_mod.LDD_35]# rmmod block_mod_e
+
+[root@notebook block_mod.LDD_35]# rmmod block_mod_c
+
+[root@notebook block_mod.LDD_35]# ls /dev/x*
+ls: невозможно получить доступ к /dev/x*: Нет такого файла или каталога
+
+
+=================================================================================================
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko 
+
+[root@notebook block_mod.LDD3]# lsmod | head -n3
+Module                  Size  Used by
+block_mod_s            13041  0 
+tcp_lp                 12583  0 
+
+
+[root@notebook block_mod.LDD3]# ls -l /dev/x*
+brw-rw---- 1 root disk 252, 16 нояб. 10 03:21 /dev/xbsa
+brw-rw---- 1 root disk 252, 17 нояб. 10 03:21 /dev/xbsb
+brw-rw---- 1 root disk 252, 18 нояб. 10 03:21 /dev/xbsc
+brw-rw---- 1 root disk 252, 19 нояб. 10 03:21 /dev/xbsd
+
+
+[root@notebook block_mod.LDD3]# mkfs.ext2 /dev/xbsa
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+1024 inodes, 4096 blocks
+204 blocks (4.98%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=4194304
+1 block group
+8192 blocks per group, 8192 fragments per group
+1024 inodes per group
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+[root@notebook block_mod.LDD3]# hdparm -tT /dev/xbsa
+
+/dev/xbsa:
+ Timing cached reads:   2270 MB in  2.00 seconds = 1136.22 MB/sec
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 269.14 MB/sec
+
+
+
+
+[root@notebook block_mod.LDD3]# fdisk -l /dev/xbsa
+
+Диск /dev/xbsa: 4 МБ, 4194304 байт
+255 heads, 63 sectors/track, 0 cylinders, всего 8192 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+[root@notebook block_mod.LDD3]# mount /dev/xbsa /mnt/dske
+
+[root@notebook block_mod.LDD3]# echo ======================================================== > /mnt/dske/f
+
+[root@notebook block_mod.LDD3]# ls -l /mnt/dske
+итого 13
+-rw-r--r-- 1 root root    57 нояб. 10 03:00 f
+drwx------ 2 root root 12288 нояб. 10 02:56 lost+found
+
+[root@notebook block_mod.LDD3]# df | grep /mnt
+/dev/xbsa             3963           30     3729            1% /mnt/dske
+
+[root@notebook block_mod.LDD3]# umount /dev/xbsa
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+
+[root@notebook block_mod.LDD3]# ls -l /dev/x*
+ls: невозможно получить доступ к /dev/x*: Нет такого файла или каталога
+
+=================================================================================================
+
+10.11.2012
+==========
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=2
+
+[root@notebook block_mod.LDD3]# ls /dev/x*
+/dev/xda  /dev/xdb  /dev/xdc  /dev/xdd
+
+[root@notebook block_mod.LDD3]# lsmod | grep ^block
+block_mod_s            13090  0 
+
+[root@notebook block_mod.LDD3]# ls -l /dev/x*
+brw-rw---- 1 root disk 252, 16 нояб. 10 11:36 /dev/xda
+brw-rw---- 1 root disk 252, 17 нояб. 10 11:36 /dev/xdb
+brw-rw---- 1 root disk 252, 18 нояб. 10 11:36 /dev/xdc
+brw-rw---- 1 root disk 252, 19 нояб. 10 11:36 /dev/xdd
+
+
+[root@notebook block_mod.LDD3]# ../block_test xda
+**** return code from write = 8488
+**** retrun code from lseek(1000) = 1000 
+**** retrun code from read vec[250] = 4, vec[250] = 250 
+
+
+
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 359.26 MB/sec
+
+
+
+[root@notebook block_mod.LDD3]# mkfs.ext2 /dev/xda
+...
+[root@notebook block_mod.LDD3]# mkfs.ext2 /dev/xdb
+...
+[root@notebook block_mod.LDD3]# mkfs.ext2 -q /dev/xdc
+[root@notebook block_mod.LDD3]# mkfs.ext2 -q /dev/xdd
+
+
+
+[root@notebook block_mod.LDD3]# mount /dev/xda /mnt/dska
+[root@notebook block_mod.LDD3]# mount /dev/xdb /mnt/dskb
+[root@notebook block_mod.LDD3]# mount /dev/xdc /mnt/dskc
+[root@notebook block_mod.LDD3]# mount /dev/xdd /mnt/dskd
+
+
+bash-4.2$ dmesg | tail -n4
+[ 5927.276132] cmd=21297
+[ 5927.276139] return -ENOTTY
+[ 5927.276932] EXT4-fs (xdd): mounting ext2 file system using the ext4 subsystem
+[ 5927.277423] EXT4-fs (xdd): mounted filesystem without journal. Opts: (null)
+
+
+[root@notebook block_mod.LDD3]# mount | grep /mnt
+/dev/xda on /mnt/dska type ext2 (rw,relatime)
+/dev/xdb on /mnt/dskb type ext2 (rw,relatime)
+/dev/xdc on /mnt/dskc type ext2 (rw,relatime)
+/dev/xdd on /mnt/dskd type ext2 (rw,relatime)
+
+
+[root@notebook block_mod.LDD3]# echo +++++++++++++++++++++++++++++ > /mnt/dska/fa
+[root@notebook block_mod.LDD3]# cp /mnt/dska/fa /mnt/dskb/fb
+[root@notebook block_mod.LDD3]# cp /mnt/dskb/fb /mnt/dskc/fc
+[root@notebook block_mod.LDD3]# cp /mnt/dskc/fc /mnt/dskd/fd
+[root@notebook block_mod.LDD3]# cat /mnt/dskd/fd
++++++++++++++++++++++++++++++
+[root@notebook block_mod.LDD3]# 
+[root@notebook block_mod.LDD3]# tree /mnt
+/mnt
+|-- dska
+|   |-- fa
+|   `-- lost+found
+|-- dskb
+|   |-- fb
+|   `-- lost+found
+|-- dskc
+|   |-- fc
+|   `-- lost+found
+|-- dskd
+|   |-- fd
+|   `-- lost+found
+|-- dske
+|-- efi
+`-- iso
+
+11 directories, 4 files
+
+
+[root@notebook block_mod.LDD3]# umount /mnt/dska
+[root@notebook block_mod.LDD3]# umount /mnt/dskb
+[root@notebook block_mod.LDD3]# umount /mnt/dskc
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+Error: Module block_mod_s is in use
+[root@notebook block_mod.LDD3]# umount /mnt/dskd
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+[root@notebook block_mod.LDD3]# ls /dev/x*
+ls: невозможно получить доступ к /dev/x*: Нет такого файла или каталога
+
+
+-------------------------------------------------------------------------------------------------
+
+[root@notebook block_mod.LDD_35]# insmod block_mod_c.ko 
+
+[root@notebook block_mod.LDD_35]# ls -l /dev/x*
+brw-rw---- 1 root disk 251, 0 нояб. 10 14:30 /dev/xbc
+
+
+[root@notebook block_mod.LDD_35]# hdparm -g /dev/xbc 
+
+/dev/xbc:
+ geometry      = 128/4/16, sectors = 8192, start = 4
+
+
+
+[root@notebook block_mod.LDD_35]# fdisk -l /dev/xbc 
+
+Диск /dev/xbc: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+
+[root@notebook block_mod.LDD_35]# fdisk -l /dev/xbc 
+
+Диск /dev/xbc: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xf2775bc8
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+/dev/xbc1               1        8191        4095+  83  Linux
+
+
+[root@notebook block_mod.LDD_35]# rmmod block_mod_c
+
+=================================================================================================
+
+-------------------------------------------------------------------------------------------------
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=2
+
+[root@notebook block_mod.LDD3]# dmesg | tail -n4
+[14664.835468]  xda: unknown partition table
+[14664.841569]  xdb: unknown partition table
+[14664.848240]  xdc: unknown partition table
+[14664.850641]  xdd: unknown partition table
+
+[root@notebook block_mod.LDD3]# ls -l /dev/x*
+brw-rw---- 1 root disk 252, 16 нояб. 10 19:35 /dev/xda
+brw-rw---- 1 root disk 252, 20 нояб. 10 19:35 /dev/xdb
+brw-rw---- 1 root disk 252, 24 нояб. 10 19:35 /dev/xdc
+brw-rw---- 1 root disk 252, 28 нояб. 10 19:35 /dev/xdd
+
+
+
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xdb
+
+/dev/xdb:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 384.39 MB/sec
+
+
+
+
+[root@notebook block_mod.LDD3]# hdparm -g /dev/xdc
+
+/dev/xdc:
+ geometry      = 128/4/16, sectors = 8192, start = 4
+
+
+
+[root@notebook block_mod.LDD3]# fdisk /dev/xda
+...
+
+[root@notebook block_mod.LDD3]# fdisk -l /dev/xda
+
+Диск /dev/xda: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x33329d58
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+/dev/xda1               1        2000        1000   83  Linux
+/dev/xda2            2001        8191        3095+   5  Расширенный
+/dev/xda5            2002        5000        1499+  83  Linux
+/dev/xda6            5002        8191        1595   83  Linux
+
+
+=================================================================================================
+
+bash-4.2$ sudo ./block_test -vv  /dev/xda -l120  -cFA
+length = 120 device = /dev/xda
+объём устройства 1048576 байт
+FA.FB.FC.FD.FE.FF.00.01.02.03.04.05.06.07.08.09.0A.0B.0C.0D.0E.0F.10.11.12.13.14.15.16.17.18.19.1A.1B.1C.1D.1E.1F.20.21.22.23.24.25.26.27.28.29.2A.2B.2C.2D.2E.2F.30.31.32.33.34.35.36.37.38.39.3A.3B.3C.3D.3E.3F.40.41.42.43.44.45.46.47.48.49.4A.4B.4C.4D.4E.4F.50.51.52.53.54.55.56.57.58.59.5A.5B.5C.5D.5E.5F.60.61.62.63.64.65.66.67.68.69.6A.6B.6C.6D.6E.6F.70.71.
+записано 120 бит
+FA.FB.FC.FD.FE.FF.00.01.02.03.04.05.06.07.08.09.0A.0B.0C.0D.0E.0F.10.11.12.13.14.15.16.17.18.19.1A.1B.1C.1D.1E.1F.20.21.22.23.24.25.26.27.28.29.2A.2B.2C.2D.2E.2F.30.31.32.33.34.35.36.37.38.39.3A.3B.3C.3D.3E.3F.40.41.42.43.44.45.46.47.48.49.4A.4B.4C.4D.4E.4F.50.51.52.53.54.55.56.57.58.59.5A.5B.5C.5D.5E.5F.60.61.62.63.64.65.66.67.68.69.6A.6B.6C.6D.6E.6F.70.71.
+считано 120 бит
+считанное в точности соответствует записанному!
+
+
+
+bash-4.2$ sudo ./block_test -v  /dev/xda -l120  -cFA
+объём устройства 1048576 байт
+записано 120 бит
+считано 120 бит
+считанное в точности соответствует записанному!
+
+
+
+bash-4.2$ sudo ./block_test  /dev/xda -l120  -cFA
+считанное в точности соответствует записанному!
+
+
+bash-4.2$ ./block_test  /dev/xda -l120  -cFA
+ошибка open: Permission denied
+
+
+bash-4.2$ ./block_test  /dev/xda3 -l120  -cFA
+ошибка open: No such file or directory
+
+
+bash-4.2$ sudo ./block_test -v /dev/xda -l2000000  -cFA
+объём устройства 1048576 байт
+записано 1048576 бит
+ошибка чтения: No space left on device
+считано 1048576 бит
+считанное в точности соответствует записанному!
+
+
+-------------------------------------------------------------------------------------------------
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 284.70 MB/sec
+
+
+bash-4.2$ sudo ./block_test -v /dev/xda -l0 
+объём устройства 4194304 байт
+записано 4194304 бит
+ошибка чтения: No space left on device
+считано 4194304 бит
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s 
+
+
+
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=2
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 354.20 MB/sec
+
+
+bash-4.2$ sudo ./block_test -v /dev/xda -l0 
+объём устройства 4194304 байт
+записано 4194304 бит
+ошибка чтения: No space left on device
+считано 4194304 бит
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s 
+
+-------------------------------------------------------------------------------------------------
+=================================================================================================
+
+09.11.2012
+==========
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=1
+
+[root@notebook block_mod.LDD3]# ls -l /dev/x*
+brw-rw---- 1 root disk 252, 16 нояб. 11 21:44 /dev/xda
+brw-rw---- 1 root disk 252, 20 нояб. 11 21:44 /dev/xdb
+brw-rw---- 1 root disk 252, 24 нояб. 11 21:44 /dev/xdc
+brw-rw---- 1 root disk 252, 28 нояб. 11 21:44 /dev/xdd
+
+[root@notebook block_mod.LDD3]# ../block_test -v /dev/xda -l1000
+объём устройства 4194304 байт
+записано 1000 байт
+считано 1000 байт
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# ../block_test -v /dev/xda -l0
+объём устройства 4194304 байт
+записано 4194304 байт
+ошибка чтения: No space left on device
+считано 4194304 байт
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.03 seconds = 129.65 MB/sec
+
+
+[root@notebook block_mod.LDD3]# mount -text2 /dev/xda1 /mnt/dska
+
+[root@notebook block_mod.LDD3]# ls -l /mnt/dska
+итого 12
+drwx------ 2 root root 12288 нояб. 11 22:57 lost+found
+
+
+[root@notebook block_mod.LDD3]# fsck   /dev/xda1
+fsck из util-linux 2.21.2
+e2fsck 1.42.3 (14-May-2012)
+/dev/xda1: clean, 11/1024 files, 162/4092 blocks
+
+-------------------------------------------------------------------------------------------------
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=0
+
+[root@notebook block_mod.LDD3]# ../test_seq -v /dev/xda -l1000
+объём устройства 4194304 байт
+записано 1000 байт
+считано 1000 байт
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda 
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 318.32 MB/sec
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+
+
+
+
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=1
+
+[root@notebook block_mod.LDD3]# ../test_seq -v /dev/xda -l1000
+объём устройства 4194304 байт
+записано 1000 байт
+считано 1000 байт
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda 
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.03 seconds = 116.02 MB/sec
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+
+
+
+
+
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko mode=2
+
+[root@notebook block_mod.LDD3]# ../test_seq -v /dev/xda -l1000
+объём устройства 4194304 байт
+записано 1000 байт
+считано 1000 байт
+считанное в точности соответствует записанному!
+
+[root@notebook block_mod.LDD3]# hdparm -t /dev/xda 
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 371.92 MB/sec
+
+[root@notebook block_mod.LDD3]# rmmod block_mod_s
+
+
+=================================================================================================
+
+-------------------------------------------------------------------------------------------------
+
+[root@notebook block_mod.LDD3]# ../test_seq -v /dev/xda -l0
+объём устройства 4194304 байт
+ошибка записи: No space left on device
+записано 4194304 байт
+ошибка чтения: No space left on device
+считано 4194304 байт
+считанное в точности соответствует записанному!
+
+
+[root@notebook block_mod.LDD3]# ../test_blk /dev/xda 
+**** return code from write = 8488
+**** retrun code from lseek(1000) = 1000 
+**** retrun code from read vec[250] = 4, vec[250] = 250 
+
+
+[root@notebook block_mod.LDD3]# ../test_blk /dev/xdf
+ошибка open /dev/xdf: No such file or directory
+
+
+bash-4.2$ ../test_blk /dev/xda
+ошибка open /dev/xda: Permission denied
+
+-------------------------------------------------------------------------------------------------
+=================================================================================================
+
+
+09.11.2012
+==========
+
+[root@notebook block_mod.LDD3]# insmod block_mod_s.ko 
+
+[root@notebook block_mod.LDD3]# fsck /dev/xda5
+fsck из util-linux 2.21.2
+e2fsck 1.42.3 (14-May-2012)
+/dev/xda5: clean, 11/264 files, 60/2092 blocks
+
+
+[root@notebook block_mod.LDD3]# mkfs /dev/xda5
+mke2fs 1.42.3 (14-May-2012)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+264 inodes, 2092 blocks
+104 blocks (4.97%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=2359296
+1 block group
+8192 blocks per group, 8192 fragments per group
+264 inodes per group
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+=================================================================================================
+
+15.11.2012
+==========
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ uname -a
+Linux vmUBUNTU 2.6.32-33-generic #72-Ubuntu SMP Fri Jul 29 21:08:37 UTC 2011 i686 GNU/Linux
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ cat /etc/debian_version 
+squeeze/sid
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo insmod block_mod_s.ko mode=2
+insmod: error inserting 'block_mod_s.ko': -1 Unknown symbol in module
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ dmesg | tail -n1
+[ 8486.247532] block_mod_s: Unknown symbol blk_put_queue
+
+-------------------------------------------------------------------------------------------------
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo insmod block_mod_s.ko mode=2
+
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ ls -l /dev/xd*
+brw-rw---- 1 root disk 251,  0 2012-11-15 19:16 /dev/xda
+brw-rw---- 1 root disk 251, 16 2012-11-15 19:16 /dev/xdb
+brw-rw---- 1 root disk 251, 32 2012-11-15 19:16 /dev/xdc
+brw-rw---- 1 root disk 251, 48 2012-11-15 19:16 /dev/xdd
+
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo ../test_seq -l0 -v /dev/xda
+объём устройства 4194304 байт
+ошибка записи: No space left on device
+записано 4194304 байт
+ошибка чтения: No space left on device
+считано 4194304 байт
+считанное в точности соответствует записанному!
+
+
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:    4 MB in  0.01 seconds = 487.86 MB/sec
+
+
+
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo rmmod 
+no module names given
+Usage: rmmod [-fhswvV] modulename ...
+ -f (or --force) forces a module unload, and may crash your
+    machine.  This requires the Forced Module Removal option
+    when the kernel was compiled.
+ -h (or --help) prints this help text
+ -s (or --syslog) says use syslog, not stderr
+ -v (or --verbose) enables more messages
+ -V (or --version) prints the version code
+ -w (or --wait) begins a module removal even if it is used
+    and will stop new users from accessing the module (so it
+    should eventually fall to zero).
+
+
+olej@vmUBUNTU:~/WORK/blkdev/block_mod.LDD3$ sudo rmmod -v block_mod_s
+rmmod block_mod_s, wait=no
+
+-------------------------------------------------------------------------------------------------
+
+[olej@fedora14vm block_mod.ELDD_14]$ uname -a
+Linux fedora14vm 2.6.35.13-92.fc14.i686 #1 SMP Sat May 21 17:39:42 UTC 2011 i686 i686 i386 GNU/Linux
+
+[olej@fedora14vm block_mod.ELDD_14]$ cat /etc/fedora-release 
+Fedora release 14 (Laughlin)
+
+-------------------------------------------------------------------------------------------------
+
+olej@debian:~/WORK/examples.DRAFT/blkdev$ uname -a
+Linux debian 3.2.0-2-686-pae #1 SMP Fri Jun 1 18:56:14 UTC 2012 i686 GNU/Linux
+
+olej@debian:~/WORK/examples.DRAFT/blkdev$ cat /etc/debian_version 
+wheezy/sid
+
+
+root@debian:/home/olej/WORK/examples.DRAFT/blkdev/block_mod.LDD3# insmod block_mod_s.ko 
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 524.52 MB/sec
+
+-------------------------------------------------------------------------------------------------
+
+
+=================================================================================================
+
+24.04.2014
+==========
+
+[olej@nvidia block_mod.LDD_35]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+[olej@nvidia etc]$ cat /etc/system-release 
+RFRemix release 15.1 (Lovelock)
+
+
+[olej@nvidia blkdev]$ make
+cc     test_blk.c   -o test_blk
+cc     test_seq.c   -o test_seq
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3'
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+=============== making all in remram =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram/dubfl.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+cc ioctl-diag.c -o ioctl-diag
+cc fchange.c -o fchange
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/remram'
+
+=================================================================================================
+
+24.04.2014
+==========
+
+[olej@fedora 26]$ uname -a
+Linux fedora.17 3.6.11-5.fc17.i686 #1 SMP Tue Jan 8 21:55:16 UTC 2013 i686 i686 i386 GNU/Linux
+
+[olej@fedora 26]$ cat /etc/system-release
+RFRemix release 17 (Beefy Miracle)
+
+[olej@fedora blkdev]$ make
+cc     test_blk.c   -o test_blk
+cc     test_seq.c   -o test_seq
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.ELDD_14'
+=============== making all in dubfl =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/dubfl'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/dubfl modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/dubfl/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+cc ioctl-diag.c -o ioctl-diag
+cc fchange.c -o fchange
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/dubfl'
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.LDD3'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.LDD3'
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/olej/2014-WORK/blkdev/block_mod.LDD_35'
+make -C /lib/modules/3.6.11-5.fc17.i686/build M=/home/olej/2014-WORK/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.6.11-5.fc17.i686'
+  CC [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/olej/2014-WORK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.6.11-5.fc17.i686'
+make[1]: Выход из каталога `/home/olej/2014-WORK/blkdev/block_mod.LDD_35'
+
+
+=================================================================================================
+
+24.04.2014
+==========
+
+bash-4.2$ cat /etc/system-release
+Fedora release 20 (Heisenbug)
+
+bash-4.2$ uname -a
+Linux notebook.localdomain 3.13.6-200.fc20.i686 #1 SMP Fri Mar 7 17:28:21 UTC 2014 i686 i686 i386 GNU/Linux
+
+bash-4.2$ make 
+gcc     test_blk.c   -o test_blk
+gcc     test_seq.c   -o test_seq
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35'
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+make[1]: Выход из каталога `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD_35'
+=============== making all in dubfl =================
+make[1]: Вход в каталог `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl'
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+gcc ioctl-diag.c -o ioctl-diag
+gcc fchange.c -o fchange
+make[1]: Выход из каталога `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/dubfl'
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3'
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+make[1]: Выход из каталога `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3'
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+make[1]: Выход из каталога `/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.ELDD_14'
+
+
+-------------------------------------------------------------------------------------------------
+
+[Olej@modules ~]$ uname -a
+Linux modules.localdomain 3.13.10-200.fc20.x86_64 #1 SMP Mon Apr 14 20:34:16 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+
+
+[Olej@modules ~]$ cat /etc/system-release
+Fedora release 20 (Heisenbug)
+
+[Olej@modules blkdev]$ make
+gcc     test_blk.c   -o test_blk
+gcc     test_seq.c   -o test_seq
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3'
+make -C /lib/modules/3.13.10-200.fc20.x86_64/build M=/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+  CC [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+make[1]: Выход из каталога `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3'
+=============== making all in dubfl =================
+make[1]: Вход в каталог `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl'
+make -C /lib/modules/3.13.10-200.fc20.x86_64/build M=/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+  CC [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+gcc ioctl-diag.c -o ioctl-diag
+gcc fchange.c -o fchange
+make[1]: Выход из каталога `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/dubfl'
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/3.13.10-200.fc20.x86_64/build M=/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+  CC [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+make[1]: Выход из каталога `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+make -C /lib/modules/3.13.10-200.fc20.x86_64/build M=/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+  CC [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/3.13.10-200.fc20.x86_64'
+make[1]: Выход из каталога `/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+
+
+-------------------------------------------------------------------------------------------------
+
+[olej@nvidia ~]$ cat /etc/system-release
+RFRemix release 15.1 (Lovelock)
+
+[olej@nvidia ~]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+
+[olej@nvidia blkdev]$ make 
+gcc     test_blk.c   -o test_blk
+gcc     test_seq.c   -o test_seq
+=============== making all in block_mod.LDD3 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3'
+=============== making all in dubfl =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+gcc ioctl-diag.c -o ioctl-diag
+gcc fchange.c -o fchange
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl'
+=============== making all in block_mod.ELDD_14 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14/block_mod_e.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.ELDD_14'
+=============== making all in block_mod.LDD_35 =================
+make[1]: Вход в каталог `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35 modules
+make[2]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[2]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+make[1]: Выход из каталога `/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35'
+
+
+[olej@nvidia dubfl]$ modinfo dubfl.ko 
+filename:       dubfl.ko
+author:         Oleg Tsiliuric <olej@front.ru>
+version:        2.5
+license:        GPL v2
+srcversion:     2F46A81B2F3210421858E18
+depends:        
+vermagic:       2.6.42.12-1.fc15.i686.PAE SMP mod_unload 686 
+parm:           size:int
+parm:           debug:int
+parm:           major:int
+parm:           file:charp
+
+=================================================================================================
+

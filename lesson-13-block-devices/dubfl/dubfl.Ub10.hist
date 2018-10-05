@@ -1,0 +1,34 @@
+17.11.2012
+==========
+
+bash-4.2$ ping vmUBUNTU
+PING vmUBUNTU (192.168.1.126) 56(84) bytes of data.
+64 bytes from vmUBUNTU.localdomain (192.168.1.126): icmp_req=1 ttl=64 time=0.290 ms
+64 bytes from vmUBUNTU.localdomain (192.168.1.126): icmp_req=2 ttl=64 time=0.316 ms
+^C
+--- vmUBUNTU ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1000ms
+rtt min/avg/max/mdev = 0.290/0.303/0.316/0.013 ms
+
+
+bash-4.2$ ssh olej@vmUBUNTU
+The authenticity of host 'vmubuntu (192.168.1.126)' can't be established.
+RSA key fingerprint is 7e:64:84:b6:fb:5f:2c:14:d0:44:e7:54:6e:51:f1:69.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'vmubuntu' (RSA) to the list of known hosts.
+olej@vmubuntu's password: 
+Linux vmUBUNTU 2.6.32-33-generic #72-Ubuntu SMP Fri Jul 29 21:08:37 UTC 2011 i686 GNU/Linux
+Ubuntu 10.04.3 LTS
+
+Welcome to Ubuntu!
+ * Documentation:  https://help.ubuntu.com/
+
+278 packages can be updated.
+215 updates are security updates.
+
+New release 'precise' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Thu Nov 15 17:29:55 2012 from notebook.local
+
+-------------------------------------------------------------------------------------------------------

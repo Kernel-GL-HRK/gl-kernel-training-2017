@@ -1,0 +1,971 @@
+29.04.2014
+==========
+
+bash-4.2$ make
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3 modules
+make[1]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.o
+/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.c: В функции «xfer_bio»:
+/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.c:73:7: предупреждение: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+       sector_t nr_sectors = bio_sectors( bio );
+       ^
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.ko
+make[1]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+
+==============================================================================================================================================
+
+bash-4.2$ make
+make -C /lib/modules/3.13.6-200.fc20.i686/build M=/home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3 modules
+make[1]: Вход в каталог `/usr/src/kernels/3.13.6-200.fc20.i686'
+  CC [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/Olej/2014_WORK/GlobalLogic/BOOK.Kernel.org/examples.tmp/blkdev/block_mod.LDD3/block_mod_s.ko
+make[1]: Выход из каталога `/usr/src/kernels/3.13.6-200.fc20.i686'
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+bash-4.2$ sudo insmod block_mod_s.ko diskmb=50 mode=1
+[sudo] password for Olej: 
+
+bash-4.2$ lsmod | head -n3
+Module                  Size  Used by
+block_mod_s            13210  0 
+fuse                   80271  2 
+
+
+bash-4.2$ ls -l /dev/x*
+brw-rw---- 1 root disk 252,  0 апр 29 13:28 /dev/xda
+brw-rw---- 1 root disk 252, 16 апр 29 13:28 /dev/xdb
+brw-rw---- 1 root disk 252, 32 апр 29 13:28 /dev/xdc
+brw-rw---- 1 root disk 252, 48 апр 29 13:28 /dev/xdd
+
+
+bash-4.2$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.03 seconds = 132.32 MB/sec
+
+
+
+bash-4.2$ sudo hdparm -i /dev/xda
+
+/dev/xda:
+ HDIO_DRIVE_CMD(identify) failed: Inappropriate ioctl for device
+ HDIO_GET_IDENTITY failed: Inappropriate ioctl for device
+
+
+
+bash-4.2$ sudo hdparm -g /dev/xda
+
+/dev/xda:
+ geometry      = 128/4/16, sectors = 8192, start = 16
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+bash-4.2$ ls /sbin/mkfs*
+/sbin/mkfs	  /sbin/mkfs.cramfs  /sbin/mkfs.ext3  /sbin/mkfs.ext4dev  /sbin/mkfs.gfs2     /sbin/mkfs.minix	/sbin/mkfs.ntfs      /sbin/mkfs.vfat
+/sbin/mkfs.btrfs  /sbin/mkfs.ext2    /sbin/mkfs.ext4  /sbin/mkfs.fat	  /sbin/mkfs.hfsplus  /sbin/mkfs.msdos	/sbin/mkfs.reiserfs  /sbin/mkfs.xfs
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+bash-4.2$ sudo mkfs.ext2 /dev/xdb
+[sudo] password for Olej: 
+mke2fs 1.42.8 (20-Jun-2013)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+1024 inodes, 4096 blocks
+204 blocks (4.98%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=4194304
+1 block group
+8192 blocks per group, 8192 fragments per group
+1024 inodes per group
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+
+==============================================================================================================================================
+
+
+bash-4.2$ fdisk -v
+fdisk из util-linux 2.24
+
+
+bash-4.2$ sudo fdisk /dev/xda
+[sudo] password for Olej: 
+
+Welcome to fdisk (util-linux 2.24).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+
+Created a new DOS disklabel with disk identifier 0xd79605fb.
+
+Команда (m для справки): m
+
+Help:
+
+  DOS (MBR)
+   a   toggle a bootable flag
+   b   edit nested BSD disklabel
+   c   toggle the dos compatibility flag
+
+  Generic
+   d   delete a partition
+   l   list known partition types
+   n   add a new partition
+   p   print the partition table
+   t   change a partition type
+   v   verify the partition table
+
+  Misc
+   m   print this menu
+   u   change display/entry units
+   x   extra functionality (experts only)
+
+  Save & Exit
+   w   write table to disk and exit
+   q   quit without saving changes
+
+  Create a new label
+   g   create a new empty GPT partition table
+   G   create a new empty SGI (IRIX) partition table
+   o   create a new empty DOS partition table
+   s   create a new empty Sun partition table
+
+
+
+
+Команда (m для справки): o
+Created a new DOS disklabel with disk identifier 0x279bbc58.
+
+Команда (m для справки): n
+
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+
+Using default response p.
+Номер раздела (1-4, default 1): 
+First sector (1-8191, default 1): 
+Last sector, +sectors or +size{K,M,G,T,P} (1-8191, default 8191): 4095
+
+Created a new partition 1 of type 'Linux' and of size 2 MiB.
+
+Команда (m для справки): n
+
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): 
+
+Using default response p.
+Номер раздела (2-4, default 2): 
+First sector (4096-8191, default 4096): 
+Last sector, +sectors or +size{K,M,G,T,P} (4096-8191, default 8191): 
+
+Created a new partition 2 of type 'Linux' and of size 2 MiB.
+
+Команда (m для справки): p
+Disk /dev/xda: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x279bbc58
+
+Устр-во   Загрузочный Start Конец Blocks  Id System
+/dev/xda1                 1  4095   2047+ 83 Linux
+/dev/xda2              4096  8191   2048  83 Linux
+
+Команда (m для справки): w
+
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+
+
+
+bash-4.2$ sudo fdisk -l /dev/xda
+[sudo] password for Olej: 
+
+Disk /dev/xda: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x279bbc58
+
+Устр-во   Загрузочный Start Конец Blocks  Id System
+/dev/xda1                 1  4095   2047+ 83 Linux
+/dev/xda2              4096  8191   2048  83 Linux
+
+
+
+bash-4.2$ sudo fdisk -l /dev/xdb
+
+Disk /dev/xdb: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+bash-4.2$ sudo mkfs.vfat /dev/xda1
+mkfs.fat 3.0.24 (2013-11-23)
+
+bash-4.2$ sudo mkfs.vfat /dev/xda2
+mkfs.fat 3.0.24 (2013-11-23)
+
+
+bash-4.2$ sudo mkdir /mnt/xda1
+[sudo] password for Olej: 
+
+bash-4.2$ sudo chmod a+rwx /mnt/xda1
+
+bash-4.2$ sudo mkdir /mnt/xda2
+
+bash-4.2$ sudo chmod a+rwx /mnt/xda2
+
+bash-4.2$ sudo mkdir /mnt/xdb
+
+bash-4.2$ sudo chmod a+rwx /mnt/xdb
+
+
+bash-4.2$ sudo mount -t vfat /dev/xda1 /mnt/xda1
+
+bash-4.2$ sudo mount -t vfat /dev/xda2 /mnt/xda2
+
+bash-4.2$ sudo mount -t ext2 /dev/xdb /mnt/xdb
+
+
+bash-4.2$ mount | grep xd
+/dev/xda1 on /mnt/xda1 type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+/dev/xda2 on /mnt/xda2 type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+/dev/xdb on /mnt/xdb type ext2 (rw,relatime)
+
+
+bash-4.2$ tree /mnt
+/mnt
+├── sysimage
+│   └── home
+├── xda1
+├── xda2
+└── xdb
+    └── lost+found [error opening dir]
+
+6 directories, 0 files
+
+
+bash-4.2$ df | grep xd
+/dev/xda1             2028            0     2028            0% /mnt/xda1
+/dev/xda2             2028            0     2028            0% /mnt/xda2
+/dev/xdb              3963           29     3730            1% /mnt/xdb
+
+==============================================================================================================================================
+
+bash-4.2$ sudo cp block_mod.ELDD_14 /mnt/xda1 -R
+
+bash-4.2$ sudo cp block_mod.ELDD_14 /mnt/xda2 -R
+
+bash-4.2$ sudo cp block_mod.ELDD_14 /mnt/xdb -R
+
+bash-4.2$ df | grep xd
+/dev/xda1             2028           18     2010            1% /mnt/xda1
+/dev/xda2             2028           18     2010            1% /mnt/xda2
+/dev/xdb              3963           43     3716            2% /mnt/xdb
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+bash-4.2$ tree /mnt
+/mnt
+├── sysimage
+│   └── home
+├── xda1
+│   └── block_mod.ELDD_14
+│       ├── block_mod_e.c
+│       ├── block_mod_e.fc15.hist
+│       ├── block_mod_orig.tgz
+│       └── Makefile
+├── xda2
+│   └── block_mod.ELDD_14
+│       ├── block_mod_e.c
+│       ├── block_mod_e.fc15.hist
+│       ├── block_mod_orig.tgz
+│       └── Makefile
+└── xdb
+    ├── block_mod.ELDD_14
+    │   ├── block_mod_e.c
+    │   ├── block_mod_e.fc15.hist
+    │   ├── block_mod_orig.tgz
+    │   └── Makefile
+    └── lost+found [error opening dir]
+
+9 directories, 12 files
+
+==============================================================================================================================================
+
+12.05.2014
+==========
+
+[Olej@modules block_mod.LDD3]$ uname -r
+3.14.3-200.fc20.x86_64
+
+
+[Olej@modules block_mod.LDD3]$ pwd
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3
+
+
+[Olej@modules block_mod.LDD3]$ make
+make -C /lib/modules/3.14.3-200.fc20.x86_64/build M=/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[1]: Вход в каталог `/usr/src/kernels/3.14.3-200.fc20.x86_64'
+  CC [M]  /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c: В функции «xfer_bio»:
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:49:25: ошибка: «struct bio» не содержит элемента с именем «bi_sector»
+    sector_t sector = bio->bi_sector;
+                         ^
+In file included from include/linux/blkdev.h:18:0,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:3,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:237:12: ошибка: incompatible types when assigning to type «int» from type «struct bvec_iter»
+  for (iter = (start);      \
+            ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:238:13: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+       (iter).bi_size &&      \
+             ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:67:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_page)
+   ^
+include/linux/bio.h:78:13: замечание: in expansion of macro «bvec_iter_page»
+  .bv_page = bvec_iter_page((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+In file included from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/percpu.h:44:0,
+                 from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/preempt.h:5,
+                 from include/linux/preempt.h:18,
+                 from include/linux/spinlock.h:50,
+                 from include/linux/seqlock.h:35,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:1,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:9: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:21: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+In file included from include/linux/blkdev.h:18:0,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:3,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:74:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+   ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:74:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+                                                       ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:239:41: предупреждение: левый операнд операции `запятая' не имеет побочных эффектов [-Wunused-value]
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+                                         ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:240:45: ошибка: выборка элемента «bv_len» из объекта, не являющегося структурой или объединением
+       bio_advance_iter((bio), &(iter), (bvl).bv_len))
+                                             ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:77:10: предупреждение: в передаче аргумента 2 «bio_advance_iter»: несовместимый тип указателя [по умолчанию включена]
+ ((struct bio_vec) {      \
+          ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:239:11: замечание: in expansion of macro «bio_iter_iovec»
+   ((bvl = bio_iter_iovec((bio), (iter))), 1);  \
+           ^
+include/linux/bio.h:243:2: замечание: in expansion of macro «__bio_for_each_segment»
+  __bio_for_each_segment(bvl, bio, iter, (bio)->bi_iter)
+  ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:51:4: замечание: in expansion of macro «bio_for_each_segment»
+    bio_for_each_segment( bvec, bio, i ) { // Работаем с каждым сегментом независимо.
+    ^
+include/linux/bio.h:225:20: замечание: expected «struct bvec_iter *» but argument is of type «int *»
+ static inline void bio_advance_iter(struct bio *bio, struct bvec_iter *iter,
+                    ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:67:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_page)
+   ^
+include/linux/bio.h:78:13: замечание: in expansion of macro «bvec_iter_page»
+  .bv_page = bvec_iter_page((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+In file included from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/percpu.h:44:0,
+                 from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/preempt.h:5,
+                 from include/linux/preempt.h:18,
+                 from include/linux/spinlock.h:50,
+                 from include/linux/seqlock.h:35,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:1,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:9: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:21: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+In file included from include/linux/blkdev.h:18:0,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:3,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:74:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+   ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:74:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+                                                       ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:163:15: замечание: in expansion of macro «bio_iter_iovec»
+  (kmap_atomic(bio_iter_iovec((bio), (iter)).bv_page) + \
+               ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:67:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_page)
+   ^
+include/linux/bio.h:78:13: замечание: in expansion of macro «bvec_iter_page»
+  .bv_page = bvec_iter_page((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+In file included from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/percpu.h:44:0,
+                 from /usr/src/kernels/3.14.3-200.fc20.x86_64/arch/x86/include/asm/preempt.h:5,
+                 from include/linux/preempt.h:18,
+                 from include/linux/spinlock.h:50,
+                 from include/linux/seqlock.h:35,
+                 from include/linux/time.h:5,
+                 from include/linux/stat.h:18,
+                 from include/linux/module.h:10,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:1,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:9: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:70:12: ошибка: выборка элемента «bi_size» из объекта, не являющегося структурой или объединением
+  min((iter).bi_size,     \
+            ^
+include/linux/kernel.h:710:21: замечание: in definition of macro «min»
+  typeof(x) _min1 = (x);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:9: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+         ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:71:6: замечание: in expansion of macro «__bvec_iter_bvec»
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+      ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:71:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+      __bvec_iter_bvec((bvec), (iter))->bv_len - (iter).bi_bvec_done)
+                                                       ^
+include/linux/kernel.h:711:21: замечание: in definition of macro «min»
+  typeof(y) _min2 = (y);   \
+                     ^
+include/linux/bio.h:79:13: замечание: in expansion of macro «bvec_iter_len»
+  .bv_len  = bvec_iter_len((bvec), (iter)), \
+             ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+In file included from include/linux/blkdev.h:18:0,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/../common.h:3,
+                 from /home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:1:
+include/linux/bio.h:64:53: ошибка: выборка элемента «bi_idx» из объекта, не являющегося структурой или объединением
+ #define __bvec_iter_bvec(bvec, iter) (&(bvec)[(iter).bi_idx])
+                                                     ^
+include/linux/bio.h:74:3: замечание: in expansion of macro «__bvec_iter_bvec»
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+   ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+include/linux/bio.h:74:55: ошибка: выборка элемента «bi_bvec_done» из объекта, не являющегося структурой или объединением
+  (__bvec_iter_bvec((bvec), (iter))->bv_offset + (iter).bi_bvec_done)
+                                                       ^
+include/linux/bio.h:80:15: замечание: in expansion of macro «bvec_iter_offset»
+  .bv_offset = bvec_iter_offset((bvec), (iter)), \
+               ^
+include/linux/bio.h:84:2: замечание: in expansion of macro «bvec_iter_bvec»
+  bvec_iter_bvec((bio)->bi_io_vec, (iter))
+  ^
+include/linux/bio.h:164:3: замечание: in expansion of macro «bio_iter_iovec»
+   bio_iter_iovec((bio), (iter)).bv_offset)
+   ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:57:16: замечание: in expansion of macro «__bio_kmap_atomic»
+       buffer = __bio_kmap_atomic( bio, i );
+                ^
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c: В функции «xfer_request»:
+/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.c:78:19: ошибка: «struct bio» не содержит элемента с именем «bi_size»
+       nsect += bio->bi_size / KERNEL_SECTOR_SIZE;
+                   ^
+make[2]: *** [/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o] Ошибка 1
+make[1]: *** [_module_/home/Olej/2014-WORK/GlobalLogic/BOOK.Kernel.org/Kexamples.BOOK/blkdev/block_mod.LDD3] Ошибка 2
+make[1]: Выход из каталога `/usr/src/kernels/3.14.3-200.fc20.x86_64'
+make: *** [default] Ошибка 2
+
+
+==============================================================================================================================================

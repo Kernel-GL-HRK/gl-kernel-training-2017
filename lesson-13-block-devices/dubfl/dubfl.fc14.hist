@@ -1,0 +1,170 @@
+14.11.2012
+==========
+
+bash-4.2$ time dd if=/dev/zero of=./XXX bs=512 count=10000
+10000+0 записей считано
+10000+0 записей написано
+ скопировано 5120000 байт (5,1 MB), 0,0549075 c, 93,2 MB/c
+
+real	0m0.058s
+user	0m0.001s
+sys	0m0.056s
+
+bash-4.2$ ls -l XXX
+-rw-rw-r-- 1 olej olej 5120000 нояб. 14 13:05 XXX
+
+---------------------------------------------------------------------------------------------------
+
+[olej@fedora14vm removable]$ dd if=/dev/zero of=./YYY bs=512 count=1000
+1000+0 записей считано
+1000+0 записей написано
+ скопировано 512000 байт (512 kB), 0,00504925 c, 101 MB/c
+
+
+===================================================================================================
+
+16.11.2012
+==========
+
+[olej@fedora14vm ~]$ uname -a
+Linux fedora14vm 2.6.35.13-92.fc14.i686 #1 SMP Sat May 21 17:39:42 UTC 2011 i686 i686 i386 GNU/Linux
+
+[olej@fedora14vm ~]$ cat /etc/fedora-release 
+Fedora release 14 (Laughlin)
+
+---------------------------------------------------------------------------------------------------
+
+[root@fedora14vm remram]# insmod dubfl.ko file=XXX
+
+[olej@fedora14vm remram]$ sudo ./fchange 
+file=/dev/dbf
+fd=3
+команда (h-подсказка): l YYY
+YYY
+/home/olej/WORK/blkdev/remram
+/home/olej/WORK/blkdev/remram/YYY
+код возврата: -1
+команда (h-подсказка): q
+[olej@fedora14vm remram]$ sudo ./fchange 
+file=/dev/dbf
+fd=3
+команда (h-подсказка): l YYY
+YYY
+/home/olej/WORK/blkdev/remram
+/home/olej/WORK/blkdev/remram/YYY
+код возврата: 0
+команда (h-подсказка): q
+
+
+[root@fedora14vm remram]# dmesg | tail -n20
+[31264.627466] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[31268.554516] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[31268.554525] + open file: XXX
+[31268.554527] + offset 5120000 bytes
+[31268.554528] + offset 0 bytes
+[31268.558991] + read from file XXX 10000 sektors
+[31268.560483] + open device /dev/dbf
+[31268.560491]  dbf: unknown partition table
+[31268.560568] + close device /dev/dbf
+[31268.561651] + device dbf has capacity 10000 sectors
+[31268.571018] + open device /dev/dbf
+[31268.571712] + ioctl cmd=5331
+[31268.571713] + ioctl cmd=5331
+[31268.571714] ! ioctl unknown command
+[31268.574373] + close device /dev/dbf
+[31268.583991] + open device /dev/dbf
+[31268.586128] + close device /dev/dbf
+[31282.268601] + open device /dev/dbf
+[31285.789514] + ioctl cmd=C0A14402
+[31285.789519] + file path = /home/olej/WORK/blkdev/remram/YYY
+
+---------------------------------------------------------------------------------------------------
+
+[root@fedora14vm remram]# insmod dubfl.ko file=XXX 
+
+[root@fedora14vm remram]# dmesg | tail -n5
+[37044.765565] + ioctl cmd=5331
+[37044.765566] ! ioctl unknown command
+[37044.767154] + close device /dev/dbf
+[37044.777383] + open device /dev/dbf
+[37044.778644] + close device /dev/dbf
+
+[root@fedora14vm remram]# dmesg | tail -n5
+[37064.301369] + file path = /home/olej/WORK/blkdev/remram/YYY
+[37064.301402] + open file: XXX
+[37064.301405] + offset 512000 bytes
+[37064.301421] + offset 0 bytes
+[37064.304336] + read from file XXX 1000 sektors
+
+[olej@fedora14vm remram]$ sudo ./fchange 
+команда (h-подсказка): i
+связанный файл: XXX
+размер (байт): 5120000
+код возврата модуля: 0
+команда (h-подсказка): l YYY
+/home/olej/WORK/blkdev/remram
+полный путь файла образа: /home/olej/WORK/blkdev/remram/YYY
+код возврата модуля: 0
+команда (h-подсказка): i
+связанный файл: /home/olej/WORK/blkdev/remram/YYY
+размер (байт): 512000
+код возврата модуля: 0
+команда (h-подсказка): 
+
+[root@fedora14vm remram]# dmesg | tail -n5
+[37064.301421] + offset 0 bytes
+[37064.304336] + read from file XXX 1000 sektors
+[37078.541110] + ioctl cmd=80AC4401
+[37163.894382] + ioctl cmd=40004402
+[37163.894605] + unlink file: /home/olej/WORK/blkdev/remram/YYY
+
+команда (h-подсказка): u
+код возврата модуля: 0
+команда (h-подсказка): i
+связанный файл: 
+размер (байт): 0
+код возврата модуля: 0
+
+
+команда (h-подсказка): l XXX
+/home/olej/WORK/blkdev/remram
+полный путь файла образа: /home/olej/WORK/blkdev/remram/XXX
+код возврата модуля: 0
+команда (h-подсказка): i
+связанный файл: /home/olej/WORK/blkdev/remram/XXX
+размер (байт): 5120000
+код возврата модуля: 0
+
+[root@fedora14vm remram]# dmesg | tail -n10
+[37266.927158] + unlink file: /home/olej/WORK/blkdev/remram/YYY
+[37267.695098] + ioctl cmd=40004402
+[37267.695101] + unlink file: 
+[37270.918153] + ioctl cmd=C0A14402
+[37270.918156] + file path = /home/olej/WORK/blkdev/remram/XXX
+[37270.918170] + open file: XXX
+[37270.918172] + offset 5120000 bytes
+[37270.918174] + offset 0 bytes
+[37270.927745] + read from file XXX 10000 sektors
+[37274.735103] + ioctl cmd=80AC4401
+
+
+[root@fedora14vm remram]# ls -l /dev/db*
+brw-rw---- 1 root disk 252, 1 Ноя 17 02:20 /dev/dbf
+[root@fedora14vm remram]# hdparm -g /dev/dbf
+
+/dev/dbf:
+ geometry      = 156/4/16, sectors = 10000, start = 16
+[root@fedora14vm remram]# hdparm -t /dev/dbf
+
+/dev/dbf:
+ Timing buffered disk reads:    4 MB in  0.02 seconds = 248.23 MB/sec
+
+
+[root@fedora14vm remram]# rmmod dubfl 
+ERROR: Module dubfl is in use
+
+[root@fedora14vm remram]# rmmod dubfl 
+[root@fedora14vm remram]# 
+
+===================================================================================================
+

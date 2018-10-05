@@ -1,0 +1,117 @@
+========================================================================
+
+24.04.2014
+==========
+
+[olej@nvidia block_mod.LDD_35]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+[olej@nvidia etc]$ cat /etc/system-release 
+RFRemix release 15.1 (Lovelock)
+
+------------------------------------------------------------------------
+
+[olej@nvidia dubfl]$ time dd if=/dev/zero of=./YYY bs=512 count=100000
+100000+0 записей считано
+100000+0 записей написано
+ скопировано 51200000 байт (51 MB), 0,212544 c, 241 MB/c
+
+real	0m0.214s
+user	0m0.016s
+sys	0m0.197s
+
+
+[olej@nvidia dubfl]$ ls -l YYY
+-rw-rw-r--. 1 olej olej 51200000 апр.  24 12:47 YYY
+
+------------------------------------------------------------------------
+
+[olej@nvidia dubfl]$ sudo insmod dubfl.ko file=XXX
+
+
+[olej@nvidia dubfl]$ dmesg | tail -n9
+[11131.295241] + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+[11131.295259] ! file open failed: XXX
+[11131.300354] + device dbf has capacity 0 sectors
+[11131.310160] + open device /dev/dbf
+[11131.310205] + ioctl cmd=5331
+[11131.310206] ! ioctl unknown command
+[11131.310551] + close device /dev/dbf
+[11131.313011] + open device /dev/dbf
+[11131.313169] + close device /dev/dbf
+
+
+[olej@nvidia dubfl]$ lsmod | head -n6
+Module                  Size  Used by
+dubfl                  13073  0 
+vfat                   17166  1 
+msdos                  17125  1 
+fat                    54535  2 vfat,msdos
+block_mod_c            12822  1 
+
+
+[olej@nvidia block_mod.LDD_35]$ ls -l /dev/db*
+brw-rw----. 1 root disk 250, 1 апр.  24 12:50 /dev/dbf
+
+
+------------------------------------------------------------------------
+
+
+[olej@nvidia dubfl]$ sudo hdparm -t /dev/dbf
+
+/dev/dbf:
+ Timing buffered disk reads: read() hit EOF - device too small
+
+
+[olej@nvidia dbf]$ cat /sys/block/dbf/size 
+0
+
+
+[olej@nvidia dubfl]$ sudo rmmod dubfl
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.574806] Oops: 0000 [#1] SMP 
+[olej@nvidia dubfl]$ 
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.574883] Process rmmod (pid: 5136, ti=cca32000 task=ed104b60 task.ti=cca32000)
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.574886] Stack:
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.574911] Call Trace:
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.574956] Code: ff ff ba ff ff ff ff 5d c3 8d b6 00 00 00 00 8d bf 00 00 00 00 55 89 e5 83 ec 0c 89 5d f8 89 75 fc 3e 8d 74 26 00 be 20 26 54 c0 <f6> 40 24 04 74 14 8b 58 10 85 db 74 0d 8b 73 04 bb 20 26 54 c0 
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.575001] EIP: [<c0542656>] vfs_llseek+0x16/0x50 SS:ESP 0068:cca33f00
+
+Message from syslogd@nvidia at Apr 24 12:58:10 ...
+ kernel:[11577.575003] CR2: 0000000000000024
+
+
+
+[olej@nvidia dubfl]$ lsmod | head -n3
+Module                  Size  Used by
+dubfl                  13073  0 
+vfat                   17166  1 
+
+========================================================================
+
+29.04.2014
+==========
+
+[olej@nvidia dubfl]$ make
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl modules
+make[1]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/dubfl/dubfl.ko
+make[1]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+gcc ioctl-diag.c -o ioctl-diag
+gcc fchange.c -o fchange
+
+========================================================================

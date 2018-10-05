@@ -1,0 +1,131 @@
+Jerry Cooperstein, «Writing Linux Device Drivers», 2009,
+том 1: «A guide with exercises», стр. 372 
+том 2: «Lab Solutions», стр. 259 
+Авторский сайт: http://coopj.com/ 
+Архив кодов примеров: http://coopj.com/LDD/ 
+
+========================================================================
+
+24.04.2014
+==========
+
+[olej@nvidia block_mod.LDD_35]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+[olej@nvidia etc]$ cat /etc/system-release 
+RFRemix release 15.1 (Lovelock)
+
+[olej@nvidia block_mod.LDD_35]$ make
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35 modules
+make[1]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD_35/block_mod_c.ko
+make[1]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD_35]$ sudo insmod block_mod_c.ko 
+
+[olej@nvidia block_mod.LDD_35]$ dmesg | tail -n15
+[ 3104.440381] + reading at sector 7928, 8 sectors 
+[ 3104.440478] + reading at sector 8128, 8 sectors 
+[ 3104.440491] + reading at sector 7936, 8 sectors 
+[ 3104.440504] + reading at sector 7792, 8 sectors 
+[ 3104.440530] + reading at sector 2048, 8 sectors 
+[ 3104.440546] + reading at sector 24, 8 sectors 
+[ 3104.440561] + reading at sector 56, 8 sectors 
+[ 3104.440573] + reading at sector 120, 8 sectors 
+[ 3104.440588] + reading at sector 16, 8 sectors 
+[ 3104.440602] + reading at sector 128, 8 sectors 
+[ 3104.440615] + reading at sector 64, 8 sectors 
+[ 3104.440635] + reading at sector 512, 8 sectors 
+[ 3104.440649] + reading at sector 32, 8 sectors 
+[ 3104.440668] + reading at sector 4096, 8 sectors 
+[ 3104.442395] + reading at sector 0, 8 sectors 
+
+[olej@nvidia block_mod.LDD_35]$ ls -l /dev/xbc
+brw-rw----. 1 root disk 251, 0 апр.  24 10:36 /dev/xbc
+
+[olej@nvidia block_mod.LDD_35]$ lsmod | grep block_mod_c
+block_mod_c            12822  0 
+
+
+[olej@nvidia block_mod.LDD_35]$ sudo fdisk -l /dev/xbc
+
+Диск /dev/xbc: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x7165725f
+
+На диске /dev/xbc отсутствует верная таблица разделов
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD_35]$ sudo fdisk /dev/xbc
+Устройство не содержит ни верной таблицы разделов DOS, ни метки диска Sun, SGI или OSF
+Building a new DOS disklabel with disk identifier 0xdc0c16e7.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Предупреждение: неверный флаг 0x0000 таблицы разделов 4 будет исправлен записью
+
+Команда (m для справки): o
+Building a new DOS disklabel with disk identifier 0x53f6f8f2.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Предупреждение: неверный флаг 0x0000 таблицы разделов 4 будет исправлен записью
+
+Команда (m для справки): w
+Таблица разделов была изменена!
+
+Вызывается ioctl() для перечитывания таблицы разделов.
+Синхронизируются диски.
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD_35]$ sudo fdisk -l /dev/xbc
+
+Диск /dev/xbc: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x53f6f8f2
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD_35]$ sudo mkfs.vfat /dev/xbc
+mkfs.vfat 3.0.11 (24 Dec 2010)
+
+[olej@nvidia block_mod.LDD_35]$ sudo mkdir /mnt/xbc
+
+[olej@nvidia block_mod.LDD_35]$ sudo mount -t vfat /dev/xbc /mnt/xbc
+
+[olej@nvidia block_mod.LDD_35]$ sudo cp block_mod_c.c /mnt/xbc
+
+[olej@nvidia block_mod.LDD_35]$ df | grep xbc
+/dev/xbc                  4072         2      4070   1% /mnt/xbc
+
+[olej@nvidia block_mod.LDD_35]$ tree /mnt/xbc
+/mnt/xbc
+`-- block_mod_c.c
+
+0 directories, 1 file
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD_35]$ sudo hdparm -t /dev/xbc
+
+/dev/xbc:
+ Timing buffered disk reads:   4 MB in  0.04 seconds = 105.11 MB/sec
+
+
+========================================================================

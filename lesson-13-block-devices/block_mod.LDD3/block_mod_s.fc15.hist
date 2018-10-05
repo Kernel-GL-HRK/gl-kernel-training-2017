@@ -1,0 +1,438 @@
+Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman: «Linux Device Drivers»,
+(3rd Edition), 2005, 2001, 1998, O’Reilly Media, Inc., ISBN: 0-596-00590-3. 
+http://dmilvdv.narod.ru/Translate/LDD3/index.html?linux_device_drivers.html 
+http://dmilvdv.narod.ru/Translate/LDD3/Linux_Device_Drivers_3_ru.pdf 
+
+========================================================================
+
+24.04.2014
+==========
+
+[olej@nvidia block_mod.LDD_35]$ uname -a
+Linux nvidia.localdomain 2.6.42.12-1.fc15.i686.PAE #1 SMP Tue Mar 20 16:19:17 UTC 2012 i686 i686 i386 GNU/Linux
+
+[olej@nvidia etc]$ cat /etc/system-release 
+RFRemix release 15.1 (Lovelock)
+
+[olej@nvidia block_mod.LDD3]$ make
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[1]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[1]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD3]$ sudo insmod block_mod_s.ko
+
+[olej@nvidia block_mod.LDD3]$ dmesg | tail -n15
+[ 3104.440649] + reading at sector 32, 8 sectors 
+[ 3104.440668] + reading at sector 4096, 8 sectors 
+[ 3104.442395] + reading at sector 0, 8 sectors 
+[ 4140.242342]  xda: unknown partition table
+[ 4140.243686]  xdb: unknown partition table
+[ 4140.244812]  xdc: unknown partition table
+[ 4140.245828]  xdd: unknown partition table
+[ 4140.247667] + ioctl cmd=5331
+[ 4140.247669] ! ioctl unknown command
+[ 4140.248727] + ioctl cmd=5331
+[ 4140.248729] ! ioctl unknown command
+[ 4140.248846] + ioctl cmd=5331
+[ 4140.248847] ! ioctl unknown command
+[ 4140.249897] + ioctl cmd=5331
+[ 4140.249899] ! ioctl unknown command
+
+[olej@nvidia block_mod.ELDD_14]$ lsmod | grep block_
+block_mod_s            13203  0 
+block_mod_c            12822  0 
+block_mod_e            12835  0 
+
+[olej@nvidia block_mod.ELDD_14]$ ls -l /dev/x*
+brw-rw----. 1 root disk 251,  0 апр.  24 10:36 /dev/xbc
+brw-rw----. 1 root disk 252,  0 апр.  24 10:33 /dev/xbe
+brw-rw----. 1 root disk 250,  0 апр.  24 10:54 /dev/xda
+brw-rw----. 1 root disk 250, 16 апр.  24 10:54 /dev/xdb
+brw-rw----. 1 root disk 250, 32 апр.  24 10:54 /dev/xdc
+brw-rw----. 1 root disk 250, 48 апр.  24 10:54 /dev/xdd
+
+
+[olej@nvidia block_mod.LDD3]$ ls -l /dev/xd*
+brw-rw----. 1 root disk 250,  0 апр.  24 10:54 /dev/xda
+brw-rw----. 1 root disk 250, 16 апр.  24 10:54 /dev/xdb
+brw-rw----. 1 root disk 250, 32 апр.  24 10:54 /dev/xdc
+brw-rw----. 1 root disk 250, 48 апр.  24 10:54 /dev/xdd
+
+
+
+[olej@nvidia block]$ ls /sys/block/xd*
+/sys/block/xda:
+alignment_offset  dev                holders   queue      ro      stat       uevent
+bdi               discard_alignment  inflight  range      size    subsystem
+capability        ext_range          power     removable  slaves  trace
+
+/sys/block/xdb:
+alignment_offset  dev                holders   queue      ro      stat       uevent
+bdi               discard_alignment  inflight  range      size    subsystem
+capability        ext_range          power     removable  slaves  trace
+
+/sys/block/xdc:
+alignment_offset  dev                holders   queue      ro      stat       uevent
+bdi               discard_alignment  inflight  range      size    subsystem
+capability        ext_range          power     removable  slaves  trace
+
+/sys/block/xdd:
+alignment_offset  dev                holders   queue      ro      stat       uevent
+bdi               discard_alignment  inflight  range      size    subsystem
+capability        ext_range          power     removable  slaves  trace
+
+
+
+
+[olej@nvidia block]$ tree /sys/block/xda
+/sys/block/xda
+|-- alignment_offset
+|-- bdi -> ../../bdi/250:0
+|-- capability
+|-- dev
+|-- discard_alignment
+|-- ext_range
+|-- holders
+|-- inflight
+|-- power
+|   |-- async
+|   |-- autosuspend_delay_ms
+|   |-- control
+|   |-- runtime_active_kids
+|   |-- runtime_active_time
+|   |-- runtime_enabled
+|   |-- runtime_status
+|   |-- runtime_suspended_time
+|   `-- runtime_usage
+|-- queue
+|   |-- add_random
+|   |-- discard_granularity
+|   |-- discard_max_bytes
+|   |-- discard_zeroes_data
+|   |-- hw_sector_size
+|   |-- iosched
+|   |   |-- back_seek_max
+|   |   |-- back_seek_penalty
+|   |   |-- fifo_expire_async
+|   |   |-- fifo_expire_sync
+|   |   |-- group_idle
+|   |   |-- low_latency
+|   |   |-- quantum
+|   |   |-- slice_async
+|   |   |-- slice_async_rq
+|   |   |-- slice_idle
+|   |   `-- slice_sync
+|   |-- iostats
+|   |-- logical_block_size
+|   |-- max_hw_sectors_kb
+|   |-- max_integrity_segments
+|   |-- max_sectors_kb
+|   |-- max_segments
+|   |-- max_segment_size
+|   |-- minimum_io_size
+|   |-- nomerges
+|   |-- nr_requests
+|   |-- optimal_io_size
+|   |-- physical_block_size
+|   |-- read_ahead_kb
+|   |-- rotational
+|   |-- rq_affinity
+|   `-- scheduler
+|-- range
+|-- removable
+|-- ro
+|-- size
+|-- slaves
+|-- stat
+|-- subsystem -> ../../../../class/block
+|-- trace
+|   |-- act_mask
+|   |-- enable
+|   |-- end_lba
+|   |-- pid
+|   `-- start_lba
+`-- uevent
+
+8 directories, 58 files
+
+
+[olej@nvidia block]$ cat /sys/block/xda/size
+8192
+
+[olej@nvidia block]$ cat /sys/block/xda/stat
+      22        0      176        0        0        0        0        0        0        0        0
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD3]$ sudo fdisk -l /dev/xda
+
+Диск /dev/xda: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x6e695f6b
+
+На диске /dev/xda отсутствует верная таблица разделов
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo mkfs.vfat /dev/xda
+mkfs.vfat 3.0.11 (24 Dec 2010)
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo fdisk -l /dev/xda
+
+Диск /dev/xda: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD3]$ sudo fdisk /dev/xdb
+Устройство не содержит ни верной таблицы разделов DOS, ни метки диска Sun, SGI или OSF
+Building a new DOS disklabel with disk identifier 0xc11cc6a1.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Предупреждение: неверный флаг 0x0000 таблицы разделов 4 будет исправлен записью
+
+Команда (m для справки): n
+Действие команды
+   e   расширенный
+   p   основной раздел (1-4)
+p
+Номер раздела (1-4, по умолчанию 1): 1
+Первый сектор (1-8191, по умолчанию 1): 
+Используется значение по умолчанию 1
+Last сектор, +секторы or +size{K,M,G} (1-8191, по умолчанию 8191): 4095
+
+Команда (m для справки): n
+Действие команды
+   e   расширенный
+   p   основной раздел (1-4)
+e
+Номер раздела (1-4, по умолчанию 2): 
+Используется значение по умолчанию 2
+Первый сектор (4096-8191, по умолчанию 4096): 
+Используется значение по умолчанию 4096
+Last сектор, +секторы or +size{K,M,G} (4096-8191, по умолчанию 8191): 
+Используется значение по умолчанию 8191
+
+Команда (m для справки): n
+Действие команды
+   l   логический (5 или более)
+   p   основной раздел (1-4)
+l
+Первый сектор (4097-8191, по умолчанию 4097): 
+Используется значение по умолчанию 4097
+Last сектор, +секторы or +size{K,M,G} (4097-8191, по умолчанию 8191): 
+Используется значение по умолчанию 8191
+
+Команда (m для справки): w
+Таблица разделов была изменена!
+
+Вызывается ioctl() для перечитывания таблицы разделов.
+Синхронизируются диски.
+
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo fdisk -l /dev/xdb
+
+Диск /dev/xdb: 4 МБ, 4194304 байт
+4 heads, 16 sectors/track, 128 cylinders, всего 8192 секторов
+Units = секторы of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0xc11cc6a1
+
+Устр-во Загр     Начало       Конец       Блоки   Id  Система
+/dev/xdb1               1        4095        2047+  83  Linux
+/dev/xdb2            4096        8191        2048    5  Расширенный
+/dev/xdb5            4097        8191        2047+  83  Linux
+
+
+
+[olej@nvidia block_mod.LDD3]$ ls -l /dev/xd*
+brw-rw----. 1 root disk 250,  0 апр.  24 12:05 /dev/xda
+brw-rw----. 1 root disk 250, 16 апр.  24 12:00 /dev/xdb
+brw-rw----. 1 root disk 250, 17 апр.  24 12:05 /dev/xdb1
+brw-rw----. 1 root disk 250, 18 апр.  24 12:00 /dev/xdb2
+brw-rw----. 1 root disk 250, 21 апр.  24 12:05 /dev/xdb5
+brw-rw----. 1 root disk 250, 32 апр.  24 10:54 /dev/xdc
+brw-rw----. 1 root disk 250, 48 апр.  24 10:54 /dev/xdd
+
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 533.26 MB/sec
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xdb
+
+/dev/xdb:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 532.69 MB/sec
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xdc
+
+/dev/xdc:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 592.68 MB/sec
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xdd
+
+/dev/xdd:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 533.33 MB/sec
+
+
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD3]$ sudo mkfs.vfat /dev/xda
+mkfs.vfat 3.0.11 (24 Dec 2010)
+
+[olej@nvidia block_mod.LDD3]$ sudo mkfs.vfat /dev/xdb1
+mkfs.vfat 3.0.11 (24 Dec 2010)
+
+[olej@nvidia block_mod.LDD3]$ sudo mkfs.vfat /dev/xdb5
+mkfs.vfat 3.0.11 (24 Dec 2010)
+
+[olej@nvidia block_mod.LDD3]$ sudo mkdir /mnt/xda
+
+[olej@nvidia block_mod.LDD3]$ sudo mkdir /mnt/xdb1
+
+[olej@nvidia block_mod.LDD3]$ sudo mkdir /mnt/xdb5
+
+[olej@nvidia block_mod.LDD3]$ sudo mount -t vfat /dev/xda /mnt/xda
+
+[olej@nvidia block_mod.LDD3]$ sudo mount -t vfat /dev/xdb1 /mnt/xdb1
+
+[olej@nvidia block_mod.LDD3]$ sudo mount -t vfat /dev/xdb5 /mnt/xdb5
+
+
+[olej@nvidia block]$ mount | grep xd
+/dev/xda on /mnt/xda type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+/dev/xdb1 on /mnt/xdb1 type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+/dev/xdb5 on /mnt/xdb5 type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=cp437,iocharset=ascii,shortname=mixed,errors=remount-ro)
+
+
+[olej@nvidia block]$ df | grep xd
+/dev/xda                  4072         0      4072   0% /mnt/xda
+/dev/xdb1                 2026         0      2026   0% /mnt/xdb1
+/dev/xdb5                 2026         0      2026   0% /mnt/xdb5
+
+
+[olej@nvidia block]$ tree /mnt/x*
+/mnt/xbc
+`-- block_mod_c.c
+/mnt/xbe
+`-- block_mo.c
+/mnt/xda
+/mnt/xdb1
+/mnt/xdb5
+
+
+[olej@nvidia remram]$ lsmod | head -n7
+Module                  Size  Used by
+vfat                   17166  4 
+msdos                  17125  1 
+fat                    54535  2 vfat,msdos
+block_mod_s            13203  4 
+block_mod_c            12822  1 
+block_mod_e            12835  1 
+
+
+[olej@nvidia block_mod.LDD3]$ sudo umount /dev/xda
+
+[olej@nvidia block_mod.LDD3]$ sudo umount /dev/xdb1
+
+[olej@nvidia block_mod.LDD3]$ sudo umount /dev/xdb5
+
+[olej@nvidia block_mod.LDD3]$ lsmod | head -n7
+Module                  Size  Used by
+vfat                   17166  1 
+msdos                  17125  1 
+fat                    54535  2 vfat,msdos
+block_mod_s            13203  0 
+block_mod_c            12822  1 
+block_mod_e            12835  1 
+
+
+[olej@nvidia block_mod.LDD3]$ sudo rmmod block_mod_s
+
+[olej@nvidia block_mod.LDD3]$ lsmod | head -n7
+Module                  Size  Used by
+vfat                   17166  1 
+msdos                  17125  1 
+fat                    54535  2 vfat,msdos
+block_mod_c            12822  1 
+block_mod_e            12835  1 
+ppdev                  17363  0 
+
+[olej@nvidia block_mod.LDD3]$ ls /dev/xd*
+ls: невозможно получить доступ к /dev/xd*: Нет такого файла или каталога
+
+------------------------------------------------------------------------
+
+[olej@nvidia block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=0
+
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 530.79 MB/sec
+
+[olej@nvidia block_mod.LDD3]$ sudo rmmod block_mod_s
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=1
+
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.02 seconds = 193.41 MB/sec
+
+[olej@nvidia block_mod.LDD3]$ sudo rmmod block_mod_s
+
+
+
+[olej@nvidia block_mod.LDD3]$ sudo insmod block_mod_s.ko mode=2
+
+[olej@nvidia block_mod.LDD3]$ sudo hdparm -t /dev/xda
+
+/dev/xda:
+ Timing buffered disk reads:   4 MB in  0.01 seconds = 638.67 MB/sec
+
+[olej@nvidia block_mod.LDD3]$ sudo rmmod block_mod_s
+
+
+========================================================================
+
+29.04.2014
+==========
+
+[olej@nvidia block_mod.LDD3]$ make
+make -C /lib/modules/2.6.42.12-1.fc15.i686.PAE/build M=/home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3 modules
+make[1]: Вход в каталог `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+  CC [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.mod.o
+  LD [M]  /home/olej/2014_WORK/GlobalLogic/Kexamples.BOOK/blkdev/block_mod.LDD3/block_mod_s.ko
+make[1]: Выход из каталога `/usr/src/kernels/2.6.42.12-1.fc15.i686.PAE'
+
+========================================================================
